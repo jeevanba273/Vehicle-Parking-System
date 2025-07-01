@@ -1,0 +1,186 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #f8f9fa;
+}
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+.btn-hover {
+  transition: all 0.3s ease;
+}
+
+.btn-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.parking-spot {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  border: 2px solid transparent;
+}
+
+.parking-spot.available {
+  background-color: var(--bs-success);
+}
+
+.parking-spot.occupied {
+  background-color: var(--bs-danger);
+}
+
+.parking-spot.reserved {
+  background-color: var(--bs-warning);
+  color: var(--bs-dark);
+}
+
+.parking-spot:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  border-color: var(--bs-primary);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-enter-from {
+  transform: translateX(30px);
+  opacity: 0;
+}
+
+.slide-leave-to {
+  transform: translateX(-30px);
+  opacity: 0;
+}
+
+/* Custom Bootstrap overrides */
+.btn-primary {
+  background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+  border: none;
+  box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #0b5ed7 0%, #0a58ca 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(13, 110, 253, 0.4);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #198754 0%, #157347 100%);
+  border: none;
+  box-shadow: 0 4px 15px rgba(25, 135, 84, 0.3);
+}
+
+.btn-success:hover {
+  background: linear-gradient(135deg, #157347 0%, #146c43 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(25, 135, 84, 0.4);
+}
+
+.navbar {
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+}
+
+.card {
+  border: none;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.form-control:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(13, 110, 253, 0.05);
+}
+
+/* Loading animations */
+.loading-spinner {
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top: 2px solid white;
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .container-fluid {
+    padding: 1rem;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .btn-group-sm .btn {
+    padding: 0.2rem 0.4rem;
+    font-size: 0.75rem;
+  }
+}

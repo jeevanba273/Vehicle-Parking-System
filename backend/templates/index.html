@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Parking System API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; }
+        .endpoint {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        .method {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .get { background: #28a745; }
+        .post { background: #007bff; }
+        .put { background: #ffc107; color: #000; }
+        .delete { background: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Vehicle Parking System API</h1>
+        <p>Backend API server is running successfully!</p>
+        
+        <h2>Available Endpoints:</h2>
+        
+        <div class="endpoint">
+            <span class="method post">POST</span>
+            <strong>/api/auth/login</strong> - User login
+        </div>
+        
+        <div class="endpoint">
+            <span class="method post">POST</span>
+            <strong>/api/auth/register</strong> - User registration
+        </div>
+        
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <strong>/api/parking-lots</strong> - Get all parking lots
+        </div>
+        
+        <div class="endpoint">
+            <span class="method post">POST</span>
+            <strong>/api/parking-lots</strong> - Create parking lot
+        </div>
+        
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <strong>/api/parking-lots/{id}/spots</strong> - Get parking spots
+        </div>
+        
+        <div class="endpoint">
+            <span class="method post">POST</span>
+            <strong>/api/bookings</strong> - Create booking
+        </div>
+        
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <strong>/api/users/{id}/bookings</strong> - Get user bookings
+        </div>
+        
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <strong>/api/analytics</strong> - Get analytics data
+        </div>
+        
+        <p><strong>Frontend:</strong> Please run the Vue.js frontend from the <code>frontend</code> folder to access the full application.</p>
+        
+        <p><strong>Demo Credentials:</strong></p>
+        <ul>
+            <li>Admin: admin@parking.com / admin</li>
+            <li>User: Register a new account or use any registered email</li>
+        </ul>
+    </div>
+</body>
+</html>
