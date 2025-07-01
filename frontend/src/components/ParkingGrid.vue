@@ -138,7 +138,7 @@
         </form>
       </div>
       
-      <div v-else-if="selectedSpot.status === 'occupied' && canRelease" class="mt-3">
+      <div v-else-if="selectedSpot.status === 'occupied'" class="mt-3">
         <div class="occupied-info p-3 bg-white rounded border">
           <div class="row g-2">
             <div class="col-md-6">
@@ -159,13 +159,61 @@
                 {{ getTimeRemaining(selectedSpot.release_time || '') }}
               </div>
             </div>
+            
+            <!-- Show user details for admin -->
+            <div v-if="isAdmin && selectedSpot.user_details" class="col-12 mt-3">
+              <div class="user-details-card p-3 bg-info bg-opacity-10 rounded border border-info">
+                <h6 class="text-info mb-2">
+                  <i class="bi bi-person-circle me-2"></i>User Details
+                </h6>
+                <div class="row g-2">
+                  <div class="col-md-6">
+                    <small class="text-muted">Name:</small>
+                    <div class="fw-bold">{{ selectedSpot.user_details.fullname }}</div>
+                  </div>
+                  <div class="col-md-6">
+                    <small class="text-muted">Email:</small>
+                    <div class="fw-bold">{{ selectedSpot.user_details.email }}</div>
+                  </div>
+                  <div class="col-md-6">
+                    <small class="text-muted">Address:</small>
+                    <div class="fw-bold">{{ selectedSpot.user_details.address }}</div>
+                  </div>
+                  <div class="col-md-6">
+                    <small class="text-muted">PIN Code:</small>
+                    <div class="fw-bold">{{ selectedSpot.user_details.pin_code }}</div>
+                  </div>
+                </div>
+                
+                <!-- Show booking details -->
+                <div v-if="selectedSpot.booking_details" class="mt-3 pt-3 border-top border-info">
+                  <h6 class="text-info mb-2">
+                    <i class="bi bi-calendar-check me-2"></i>Booking Details
+                  </h6>
+                  <div class="row g-2">
+                    <div class="col-md-6">
+                      <small class="text-muted">Duration:</small>
+                      <div class="fw-bold">{{ formatDuration(selectedSpot.booking_details.duration_hours) }}</div>
+                    </div>
+                    <div class="col-md-6">
+                      <small class="text-muted">Total Cost:</small>
+                      <div class="fw-bold text-success">${{ selectedSpot.booking_details.total_cost.toFixed(2) }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <button @click="releaseSpot" class="btn btn-warning mt-3" :disabled="releasing">
-          <span v-if="releasing" class="spinner-border spinner-border-sm me-2"></span>
-          <i v-else class="bi bi-unlock me-2"></i>
-          {{ releasing ? 'Releasing...' : 'Release Spot' }}
-        </button>
+        
+        <!-- Release button for user's own booking -->
+        <div v-if="canRelease" class="mt-3">
+          <button @click="releaseSpot" class="btn btn-warning" :disabled="releasing">
+            <span v-if="releasing" class="spinner-border spinner-border-sm me-2"></span>
+            <i v-else class="bi bi-unlock me-2"></i>
+            {{ releasing ? 'Releasing...' : 'Release Spot' }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -195,6 +243,8 @@ const bookingForm = reactive({
   minutes: 0,
   totalHours: 1
 })
+
+const isAdmin = computed(() => authStore.isAdmin)
 
 const canRelease = computed(() => {
   return selectedSpot.value?.occupied_by === authStore.currentUser?.id
@@ -278,7 +328,7 @@ const bookSpot = async () => {
         lot_id: props.lot.id,
         spot_id: selectedSpot.value.id,
         vehicle_number: bookingForm.vehicleNumber,
-        hours: Math.max(0.25, bookingForm.totalHours) // Ensure minimum 15 minutes
+        hours: Math.max(0.25, bookingForm.totalHours) // Send the actual duration
       })
     })
     
@@ -512,6 +562,17 @@ const getTimeRemainingColor = (releaseTime: string) => {
 .occupied-info {
   background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%) !important;
   border: 2px solid #ffc107 !important;
+}
+
+.user-details-card {
+  background: linear-gradient(135deg, #e7f3ff 0%, #cce7ff 100%) !important;
+  border: 2px solid #0dcaf0 !important;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .btn-group-sm .btn {

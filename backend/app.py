@@ -116,6 +116,7 @@ class Booking(db.Model):
     vehicle_number = db.Column(db.String(20), nullable=False)
     start_time = db.Column(db.DateTime, default=datetime.utcnow)
     end_time = db.Column(db.DateTime)
+    duration_hours = db.Column(db.Float, nullable=False)  # Store actual duration
     total_cost = db.Column(db.Float, nullable=False)
     status = db.Column(db.String(20), default='active')  # active, completed
     
@@ -406,7 +407,7 @@ def get_parking_spots(lot_id):
     spots = ParkingSpot.query.filter_by(lot_id=lot_id).all()
     spots_data = []
     for spot in spots:
-        spots_data.append({
+        spot_data = {
             'id': str(spot.id),
             'lot_id': str(spot.lot_id),
             'spot_number': spot.spot_number,
@@ -415,7 +416,34 @@ def get_parking_spots(lot_id):
             'vehicle_number': spot.vehicle_number,
             'booked_at': spot.booked_at.isoformat() if spot.booked_at else None,
             'release_time': spot.release_time.isoformat() if spot.release_time else None
-        })
+        }
+        
+        # Add user details if occupied (for admin view)
+        if spot.occupied_by:
+            user = User.query.get(spot.occupied_by)
+            if user:
+                spot_data['user_details'] = {
+                    'id': str(user.id),
+                    'fullname': user.fullname,
+                    'email': user.email,
+                    'address': user.address,
+                    'pin_code': user.pin_code
+                }
+                
+                # Get booking details
+                booking = Booking.query.filter_by(
+                    spot_id=spot.id,
+                    status='active'
+                ).first()
+                if booking:
+                    spot_data['booking_details'] = {
+                        'id': str(booking.id),
+                        'duration_hours': booking.duration_hours,
+                        'total_cost': booking.total_cost,
+                        'start_time': booking.start_time.isoformat()
+                    }
+        
+        spots_data.append(spot_data)
     
     # Cache for 1 minute (more frequent updates needed)
     set_cache(cache_key, spots_data, 60)
@@ -431,15 +459,17 @@ def create_booking():
     if not spot or spot.status != 'available':
         return jsonify({'success': False, 'message': 'Spot not available'}), 400
     
-    hours = data.get('hours', 1)
+    # Get the actual hours from the request (this is the fix!)
+    hours = float(data.get('hours', 1))
     total_cost = lot.price_per_hour * hours
     
-    # Create booking
+    # Create booking with actual duration
     booking = Booking(
         user_id=data['user_id'],
         lot_id=data['lot_id'],
         spot_id=data['spot_id'],
         vehicle_number=data['vehicle_number'],
+        duration_hours=hours,  # Store the actual duration
         total_cost=total_cost,
         status='active'
     )
@@ -449,7 +479,7 @@ def create_booking():
     spot.occupied_by = data['user_id']
     spot.vehicle_number = data['vehicle_number']
     spot.booked_at = datetime.utcnow()
-    spot.release_time = datetime.utcnow() + timedelta(hours=hours)
+    spot.release_time = datetime.utcnow() + timedelta(hours=hours)  # Use actual hours
     
     # Update lot availability
     lot.available_spots = max(0, lot.available_spots - 1)
@@ -518,6 +548,7 @@ def get_user_bookings(user_id):
             'vehicle_number': booking.vehicle_number,
             'start_time': booking.start_time.isoformat(),
             'end_time': booking.end_time.isoformat() if booking.end_time else None,
+            'duration_hours': booking.duration_hours,
             'total_cost': booking.total_cost,
             'status': booking.status
         })
