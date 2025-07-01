@@ -468,9 +468,9 @@ const viewSpots = (lot: ParkingLot) => {
   selectedLot.value = lot
 }
 
-const viewAnalytics = (lot: ParkingLot) => {
+const viewAnalytics = (_lot: ParkingLot) => {
   // Future feature: Individual lot analytics
-  showNotification(`Analytics for ${lot.name} - Coming soon!`, 'info')
+  showNotification(`Analytics for ${_lot.name} - Coming soon!`, 'info')
 }
 
 const saveLot = async () => {
@@ -544,7 +544,7 @@ const getStatusIcon = (lot: ParkingLot) => {
   return 'bi bi-check-circle-fill'
 }
 
-const showNotification = (message: string, type: 'success' | 'error' | 'info') => {
+const showNotification = (message: string, _notificationType: 'success' | 'error' | 'info') => {
   // Enhanced notification system
   alert(message) // Temporary - will be replaced with toast notifications
 }
@@ -810,7 +810,7 @@ const showNotification = (message: string, type: 'success' | 'error' | 'info') =
 
 .occupancy-header {
   display: flex;
-  justify-content: between;
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 0.75rem;
 }

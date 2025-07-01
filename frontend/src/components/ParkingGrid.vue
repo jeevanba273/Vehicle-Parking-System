@@ -498,7 +498,7 @@ const getTimeRemainingColor = (releaseTime: string) => {
   return 'text-success'
 }
 
-const showNotification = (message: string, type: 'success' | 'error' | 'warning' | 'info') => {
+const showNotification = (message: string, _notificationType: 'success' | 'error' | 'warning' | 'info') => {
   // Enhanced notification system - will be replaced with toast notifications
   alert(message)
 }
@@ -696,7 +696,7 @@ const showNotification = (message: string, type: 'success' | 'error' | 'warning'
   color: white;
   padding: 1rem 1.5rem;
   display: flex;
-  justify-content: between;
+  justify-content: space-between;
   align-items: center;
 }
 
@@ -793,7 +793,7 @@ const showNotification = (message: string, type: 'success' | 'error' | 'warning'
 
 .cost-row {
   display: flex;
-  justify-content: between;
+  justify-content: space-between;
   align-items: center;
   padding: 0.5rem 0;
 }
