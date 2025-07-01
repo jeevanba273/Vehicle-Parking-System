@@ -9,6 +9,7 @@ from celery import Celery
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
 import json
+import uuid
 
 app = Flask(__name__)
 
@@ -86,7 +87,7 @@ class User(db.Model, UserMixin):
     address = db.Column(db.Text)
     pin_code = db.Column(db.String(10))
     active = db.Column(db.Boolean(), default=True)
-    fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False)
+    fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     roles = db.relationship('Role', secondary=roles_users, backref=db.backref('users', lazy='dynamic'))
 
@@ -240,7 +241,6 @@ def register():
         return jsonify({'success': False, 'message': 'Email already exists'}), 400
     
     # Generate unique identifier for Flask-Security
-    import uuid
     fs_uniquifier = str(uuid.uuid4())
     
     # Create new user
