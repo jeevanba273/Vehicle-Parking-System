@@ -163,86 +163,101 @@ const logout = () => {
 }
 
 .user-dropdown-menu {
-  border: none;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-  border-radius: 12px;
-  padding: 0.5rem 0;
-  min-width: 220px;
-  z-index: 1060;
-  position: absolute;
-  top: 100%;
-  right: 0;
-  margin-top: 0.5rem;
+  border: none !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+  border-radius: 12px !important;
+  padding: 0.5rem 0 !important;
+  min-width: 220px !important;
+  z-index: 9999 !important;
+  position: absolute !important;
+  top: 100% !important;
+  right: 0 !important;
+  margin-top: 0.5rem !important;
+  background: white !important;
+  transform: translateZ(0) !important;
+  will-change: transform !important;
 }
 
 .dropdown-header {
-  color: #495057;
-  font-weight: 600;
-  padding: 0.75rem 1rem 0.5rem;
-  margin-bottom: 0;
-  font-size: 0.9rem;
+  color: #495057 !important;
+  font-weight: 600 !important;
+  padding: 0.75rem 1rem 0.5rem !important;
+  margin-bottom: 0 !important;
+  font-size: 0.9rem !important;
 }
 
 .dropdown-item {
-  padding: 0.75rem 1rem;
-  transition: all 0.3s ease;
-  border-radius: 8px;
-  margin: 0 0.5rem;
-  font-size: 0.9rem;
+  padding: 0.75rem 1rem !important;
+  transition: all 0.3s ease !important;
+  border-radius: 8px !important;
+  margin: 0 0.5rem !important;
+  font-size: 0.9rem !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
 }
 
 .dropdown-item:hover {
-  background-color: #f8f9fa;
-  transform: translateX(5px);
+  background-color: #f8f9fa !important;
+  transform: translateX(5px) !important;
 }
 
 .logout-item:hover {
-  background-color: #fee;
+  background-color: #fee !important;
   color: #dc3545 !important;
 }
 
 .dropdown-divider {
-  margin: 0.5rem 1rem;
-  border-color: #e9ecef;
+  margin: 0.5rem 1rem !important;
+  border-color: #e9ecef !important;
 }
 
-/* Ensure dropdown appears above other content */
+/* Force dropdown to appear above everything */
 .dropdown-menu.show {
-  display: block;
-  z-index: 1060;
+  display: block !important;
+  z-index: 9999 !important;
+  position: absolute !important;
+  transform: translateZ(0) !important;
+  backface-visibility: hidden !important;
+}
+
+.dropdown {
+  position: relative !important;
+  z-index: 1000 !important;
 }
 
 /* Fix navbar collapse on mobile */
 @media (max-width: 991.98px) {
   .navbar-collapse {
-    background: rgba(13, 110, 253, 0.95);
-    border-radius: 12px;
-    margin-top: 1rem;
-    padding: 1rem;
-    backdrop-filter: blur(10px);
+    background: rgba(13, 110, 253, 0.95) !important;
+    border-radius: 12px !important;
+    margin-top: 1rem !important;
+    padding: 1rem !important;
+    backdrop-filter: blur(10px) !important;
+    z-index: 1040 !important;
   }
   
   .user-dropdown-menu {
-    position: static;
-    float: none;
-    width: 100%;
-    margin-top: 0.5rem;
-    box-shadow: none;
-    border: 1px solid rgba(255,255,255,0.2);
-    background: rgba(255,255,255,0.1);
+    position: static !important;
+    float: none !important;
+    width: 100% !important;
+    margin-top: 0.5rem !important;
+    box-shadow: none !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    background: rgba(255,255,255,0.1) !important;
+    z-index: 1050 !important;
   }
   
   .dropdown-item {
-    color: white;
+    color: white !important;
   }
   
   .dropdown-item:hover {
-    background-color: rgba(255,255,255,0.1);
-    color: white;
+    background-color: rgba(255,255,255,0.1) !important;
+    color: white !important;
   }
   
   .logout-item:hover {
-    background-color: rgba(220, 53, 69, 0.2);
+    background-color: rgba(220, 53, 69, 0.2) !important;
     color: #ff6b6b !important;
   }
 }
@@ -263,5 +278,20 @@ const logout = () => {
 
 .dropdown-menu {
   transition: all 0.3s ease;
+}
+
+/* Ensure dropdown stays on top */
+.navbar .dropdown-menu {
+  z-index: 9999 !important;
+  position: absolute !important;
+  top: 100% !important;
+  right: 0 !important;
+  left: auto !important;
+  transform: none !important;
+}
+
+/* Override Bootstrap z-index */
+.navbar-nav .dropdown-menu {
+  z-index: 9999 !important;
 }
 </style>

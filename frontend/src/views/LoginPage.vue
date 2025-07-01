@@ -332,7 +332,7 @@ const handleLogin = async () => {
 
 .input-icon {
   position: absolute;
-  left: 1.25rem;
+  left: 1rem;
   top: 50%;
   transform: translateY(-50%);
   color: #a0aec0;
@@ -345,7 +345,7 @@ const handleLogin = async () => {
   background: #f7fafc;
   border: 2px solid #e2e8f0;
   border-radius: 12px;
-  padding: 0.875rem 1.25rem 0.875rem 4rem;
+  padding: 0.875rem 1.25rem 0.875rem 4.5rem !important;
   font-size: 1rem;
   transition: all 0.3s ease;
   width: 100%;
@@ -362,31 +362,36 @@ const handleLogin = async () => {
 .form-control::placeholder {
   color: #a0aec0;
   font-size: 1rem;
+  padding-left: 0.5rem;
 }
 
 .login-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
-  border-radius: 12px;
-  padding: 0.875rem 2rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  width: 100%;
-  margin-bottom: 1.5rem;
-  transition: all 0.3s ease;
-  color: white;
-  cursor: pointer;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  border-radius: 12px !important;
+  padding: 0.875rem 2rem !important;
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  width: 100% !important;
+  margin-bottom: 1.5rem !important;
+  transition: all 0.3s ease !important;
+  color: white !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  user-select: none !important;
+  display: block !important;
+  text-align: center !important;
 }
 
 .login-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  transform: translateY(-2px) !important;
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3) !important;
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%) !important;
 }
 
 .login-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
+  opacity: 0.7 !important;
+  cursor: not-allowed !important;
 }
 
 .error-alert {
@@ -410,15 +415,17 @@ const handleLogin = async () => {
 }
 
 .signup-link {
-  color: #667eea;
-  text-decoration: none;
-  font-weight: 600;
-  transition: color 0.3s ease;
+  color: #667eea !important;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+  transition: color 0.3s ease !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
 }
 
 .signup-link:hover {
-  color: #5a67d8;
-  text-decoration: underline;
+  color: #5a67d8 !important;
+  text-decoration: underline !important;
 }
 
 .demo-credentials {
@@ -502,7 +509,7 @@ const handleLogin = async () => {
   }
   
   .form-control {
-    padding: 0.75rem 1rem 0.75rem 3.5rem;
+    padding: 0.75rem 1rem 0.75rem 4rem !important;
   }
   
   .input-icon {

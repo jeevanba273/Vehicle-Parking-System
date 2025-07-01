@@ -397,7 +397,7 @@ const handleSignup = async () => {
   background: #f7fafc;
   border: 2px solid #e2e8f0;
   border-radius: 12px;
-  padding: 0.75rem 1rem 0.75rem 3rem;
+  padding: 0.75rem 1rem 0.75rem 4.5rem !important;
   font-size: 1rem;
   transition: all 0.3s ease;
   width: 100%;
@@ -406,7 +406,7 @@ const handleSignup = async () => {
 .textarea-control {
   resize: vertical;
   min-height: 80px;
-  padding-top: 1rem;
+  padding-top: 1rem !important;
 }
 
 .textarea-control + .input-icon {
@@ -422,30 +422,36 @@ const handleSignup = async () => {
 
 .form-control::placeholder {
   color: #a0aec0;
+  padding-left: 0.5rem;
 }
 
 .signup-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
-  border-radius: 12px;
-  padding: 0.875rem 2rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  width: 100%;
-  margin-bottom: 1.5rem;
-  transition: all 0.3s ease;
-  color: white;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  border-radius: 12px !important;
+  padding: 0.875rem 2rem !important;
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  width: 100% !important;
+  margin-bottom: 1.5rem !important;
+  transition: all 0.3s ease !important;
+  color: white !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  user-select: none !important;
+  display: block !important;
+  text-align: center !important;
 }
 
 .signup-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  transform: translateY(-2px) !important;
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3) !important;
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%) !important;
 }
 
 .signup-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
+  opacity: 0.7 !important;
+  cursor: not-allowed !important;
 }
 
 .error-alert {
@@ -468,15 +474,17 @@ const handleSignup = async () => {
 }
 
 .login-link {
-  color: #667eea;
-  text-decoration: none;
-  font-weight: 600;
-  transition: color 0.3s ease;
+  color: #667eea !important;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+  transition: color 0.3s ease !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
 }
 
 .login-link:hover {
-  color: #5a67d8;
-  text-decoration: underline;
+  color: #5a67d8 !important;
+  text-decoration: underline !important;
 }
 
 /* Responsive Design */
@@ -510,7 +518,7 @@ const handleSignup = async () => {
   }
   
   .form-control {
-    padding: 0.625rem 0.875rem 0.625rem 2.5rem;
+    padding: 0.625rem 0.875rem 0.625rem 4rem !important;
   }
   
   .input-icon {
