@@ -187,20 +187,15 @@ const handleLogin = async () => {
     radial-gradient(circle at 25% 25%, rgba(255,255,255,0.1) 2px, transparent 2px),
     radial-gradient(circle at 75% 75%, rgba(255,255,255,0.1) 2px, transparent 2px);
   background-size: 50px 50px;
-  animation: float 20s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(1deg); }
 }
 
 .branding-section {
   background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   position: relative;
   overflow: hidden;
+  padding-top: 3rem;
 }
 
 .branding-section::before {
@@ -226,18 +221,12 @@ const handleLogin = async () => {
   position: relative;
   max-width: 400px;
   padding: 2rem;
+  margin-top: 2rem;
 }
 
 .brand-logo {
   font-size: 4rem;
   margin-bottom: 1rem;
-  animation: bounce 2s ease-in-out infinite;
-}
-
-@keyframes bounce {
-  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-  40% { transform: translateY(-10px); }
-  60% { transform: translateY(-5px); }
 }
 
 .brand-title {
@@ -493,6 +482,14 @@ const handleLogin = async () => {
   
   .login-section {
     padding: 1rem;
+  }
+  
+  .branding-section {
+    padding-top: 2rem;
+  }
+  
+  .branding-content {
+    margin-top: 1rem;
   }
 }
 
