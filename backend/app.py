@@ -34,7 +34,7 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 # CORS Configuration for production
-if os.environ.get('RAILWAY_ENVIRONMENT'):
+if os.environ.get('RAILWAY_ENVIRONMENT') or os.environ.get('RAILWAY_PROJECT_ID'):
     # Production CORS settings
     CORS(app, origins=[
         "https://*.netlify.app",
@@ -188,7 +188,11 @@ def index():
 
 @app.route('/health')
 def health_check():
-    return jsonify({'status': 'healthy', 'timestamp': datetime.utcnow().isoformat()})
+    return jsonify({
+        'status': 'healthy', 
+        'timestamp': datetime.utcnow().isoformat(),
+        'environment': os.environ.get('RAILWAY_ENVIRONMENT', 'development')
+    })
 
 @app.route('/api/auth/login', methods=['POST'])
 def login():
@@ -558,67 +562,69 @@ def get_analytics():
     return jsonify(analytics_data)
 
 # Initialize database
-@app.before_first_request
 def create_tables():
-    db.create_all()
-    
-    # Create admin role if not exists
-    admin_role = Role.query.filter_by(name='admin').first()
-    if not admin_role:
-        admin_role = Role(name='admin', description='Administrator')
-        db.session.add(admin_role)
-        db.session.commit()
-    
-    # Create sample data if database is empty
-    if ParkingLot.query.count() == 0:
-        # Sample parking lots
-        lots_data = [
-            {
-                'name': 'Downtown Plaza',
-                'location': 'City Center',
-                'address': '123 Main Street, Downtown',
-                'total_spots': 50,
-                'price_per_hour': 5.0
-            },
-            {
-                'name': 'Shopping Mall',
-                'location': 'West District', 
-                'address': '456 Mall Avenue, West Side',
-                'total_spots': 100,
-                'price_per_hour': 3.0
-            },
-            {
-                'name': 'Business District',
-                'location': 'Financial Center',
-                'address': '789 Business Blvd, Downtown',
-                'total_spots': 75,
-                'price_per_hour': 8.0
-            }
-        ]
+    with app.app_context():
+        db.create_all()
         
-        for lot_data in lots_data:
-            lot = ParkingLot(
-                name=lot_data['name'],
-                location=lot_data['location'],
-                address=lot_data['address'],
-                total_spots=lot_data['total_spots'],
-                available_spots=lot_data['total_spots'],
-                price_per_hour=lot_data['price_per_hour']
-            )
-            db.session.add(lot)
-            db.session.flush()
+        # Create admin role if not exists
+        admin_role = Role.query.filter_by(name='admin').first()
+        if not admin_role:
+            admin_role = Role(name='admin', description='Administrator')
+            db.session.add(admin_role)
+            db.session.commit()
+        
+        # Create sample data if database is empty
+        if ParkingLot.query.count() == 0:
+            # Sample parking lots
+            lots_data = [
+                {
+                    'name': 'Downtown Plaza',
+                    'location': 'City Center',
+                    'address': '123 Main Street, Downtown',
+                    'total_spots': 50,
+                    'price_per_hour': 5.0
+                },
+                {
+                    'name': 'Shopping Mall',
+                    'location': 'West District', 
+                    'address': '456 Mall Avenue, West Side',
+                    'total_spots': 100,
+                    'price_per_hour': 3.0
+                },
+                {
+                    'name': 'Business District',
+                    'location': 'Financial Center',
+                    'address': '789 Business Blvd, Downtown',
+                    'total_spots': 75,
+                    'price_per_hour': 8.0
+                }
+            ]
             
-            # Create spots for each lot
-            for i in range(1, lot_data['total_spots'] + 1):
-                spot = ParkingSpot(
-                    lot_id=lot.id,
-                    spot_number=f"{i:02d}",
-                    status='available'
+            for lot_data in lots_data:
+                lot = ParkingLot(
+                    name=lot_data['name'],
+                    location=lot_data['location'],
+                    address=lot_data['address'],
+                    total_spots=lot_data['total_spots'],
+                    available_spots=lot_data['total_spots'],
+                    price_per_hour=lot_data['price_per_hour']
                 )
-                db.session.add(spot)
-        
-        db.session.commit()
+                db.session.add(lot)
+                db.session.flush()
+                
+                # Create spots for each lot
+                for i in range(1, lot_data['total_spots'] + 1):
+                    spot = ParkingSpot(
+                        lot_id=lot.id,
+                        spot_number=f"{i:02d}",
+                        status='available'
+                    )
+                    db.session.add(spot)
+            
+            db.session.commit()
 
 if __name__ == '__main__':
+    create_tables()
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=os.environ.get('FLASK_ENV') == 'development')
+    debug = os.environ.get('FLASK_ENV') == 'development'
+    app.run(host='0.0.0.0', port=port, debug=debug)
