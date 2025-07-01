@@ -86,6 +86,7 @@ class User(db.Model, UserMixin):
     address = db.Column(db.Text)
     pin_code = db.Column(db.String(10))
     active = db.Column(db.Boolean(), default=True)
+    fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     roles = db.relationship('Role', secondary=roles_users, backref=db.backref('users', lazy='dynamic'))
 
@@ -238,13 +239,18 @@ def register():
     if existing_user:
         return jsonify({'success': False, 'message': 'Email already exists'}), 400
     
+    # Generate unique identifier for Flask-Security
+    import uuid
+    fs_uniquifier = str(uuid.uuid4())
+    
     # Create new user
     user = User(
         email=data['email'],
         password=generate_password_hash(data['password']),
         fullname=data['fullname'],
         address=data['address'],
-        pin_code=data['pin_code']
+        pin_code=data['pin_code'],
+        fs_uniquifier=fs_uniquifier
     )
     
     db.session.add(user)
