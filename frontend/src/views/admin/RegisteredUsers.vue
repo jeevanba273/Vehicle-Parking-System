@@ -184,6 +184,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { getApiUrl } from '../../config/api'
 import type { User } from '../../stores/auth'
 
 interface UserWithStats extends User {
@@ -217,7 +218,7 @@ onMounted(() => {
 const loadUsers = async () => {
   loading.value = true
   try {
-    const response = await fetch('http://localhost:5000/api/users')
+    const response = await fetch(getApiUrl('/api/users'))
     if (response.ok) {
       users.value = await response.json()
     }

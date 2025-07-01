@@ -29,4 +29,4 @@ export const API_ENDPOINTS = {
 }
 
 // Helper function to get API URL with endpoint
-export const getApiUrl = (endpoint: string) => `${API_BASE_URL}${endpoint}`
+export { getApiUrl }
