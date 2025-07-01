@@ -13,6 +13,21 @@ export interface ParkingLot {
   created_at: string
 }
 
+export interface UserDetails {
+  id: string
+  fullname: string
+  email: string
+  address: string
+  pin_code: string
+}
+
+export interface BookingDetails {
+  id: string
+  duration_hours: number
+  total_cost: number
+  start_time: string
+}
+
 export interface ParkingSpot {
   id: string
   lot_id: string
@@ -22,6 +37,8 @@ export interface ParkingSpot {
   vehicle_number?: string
   booked_at?: string
   release_time?: string
+  user_details?: UserDetails
+  booking_details?: BookingDetails
 }
 
 export interface Booking {
@@ -32,6 +49,7 @@ export interface Booking {
   vehicle_number: string
   start_time: string
   end_time?: string
+  duration_hours: number
   total_cost: number
   status: 'active' | 'completed'
 }

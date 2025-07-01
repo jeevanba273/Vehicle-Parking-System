@@ -118,6 +118,10 @@
                       {{ booking.end_time ? formatDateTime(booking.end_time) : 'Active' }}
                     </div>
                   </div>
+                  <div class="col-6">
+                    <small class="text-muted">Duration</small>
+                    <div class="fw-bold">{{ formatDuration(booking.duration_hours) }}</div>
+                  </div>
                 </div>
                 
                 <div class="d-flex justify-content-between align-items-center">
@@ -166,6 +170,7 @@ interface Booking {
   vehicle_number: string
   start_time: string
   end_time: string | null
+  duration_hours: number
   total_cost: number
   status: 'active' | 'completed'
 }
@@ -267,6 +272,22 @@ const releaseBooking = async (booking: Booking) => {
 
 const formatDateTime = (dateString: string) => {
   return new Date(dateString).toLocaleString()
+}
+
+const formatDuration = (totalHours: number) => {
+  if (totalHours < 1) {
+    return `${Math.round(totalHours * 60)} minutes`
+  } else if (totalHours === 1) {
+    return '1 hour'
+  } else {
+    const hours = Math.floor(totalHours)
+    const minutes = Math.round((totalHours - hours) * 60)
+    if (minutes === 0) {
+      return `${hours} hours`
+    } else {
+      return `${hours}h ${minutes}m`
+    }
+  }
 }
 </script>
 
