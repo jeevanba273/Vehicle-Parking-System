@@ -32,3 +32,27 @@ export const API_ENDPOINTS = {
   BOOKINGS: getApiUrl('/api/bookings'),
   ANALYTICS: getApiUrl('/api/analytics'),
 }
+
+// Add request interceptor for better error handling
+export const apiRequest = async (url: string, options: RequestInit = {}) => {
+  const defaultOptions: RequestInit = {
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+    ...options,
+  }
+
+  try {
+    const response = await fetch(url, defaultOptions)
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    
+    return response
+  } catch (error) {
+    console.error('API request failed:', error)
+    throw error
+  }
+}

@@ -20,142 +20,163 @@ body {
   background: #f8f9fa;
 }
 
-/* Button fixes */
-.btn {
+/* Critical button fixes */
+.btn, button, [type="button"], [type="submit"] {
   cursor: pointer !important;
-  user-select: none;
-  border: none;
-  outline: none;
-  transition: all 0.3s ease;
-  position: relative;
-  z-index: 1;
+  user-select: none !important;
+  border: none !important;
+  outline: none !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+  z-index: 1 !important;
+  pointer-events: auto !important;
+  display: inline-block !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  touch-action: manipulation !important;
+  background-image: none !important;
+  white-space: nowrap !important;
 }
 
-.btn:focus {
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+.btn:focus, button:focus {
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
 }
 
-.btn:hover {
-  transform: translateY(-1px);
+.btn:hover, button:hover {
+  transform: translateY(-1px) !important;
 }
 
-.btn:active {
-  transform: translateY(0);
+.btn:active, button:active {
+  transform: translateY(0) !important;
 }
 
-.btn:disabled {
+.btn:disabled, button:disabled {
   cursor: not-allowed !important;
-  opacity: 0.6;
+  opacity: 0.6 !important;
+  pointer-events: none !important;
+}
+
+/* Router link fixes */
+.router-link-active, .router-link-exact-active, a {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  text-decoration: none !important;
 }
 
 /* Form controls */
-.form-control {
-  border: 2px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
-  font-size: 1rem;
-  transition: all 0.3s ease;
+.form-control, input, select, textarea {
+  border: 2px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  padding: 0.75rem 1rem !important;
+  font-size: 1rem !important;
+  transition: all 0.3s ease !important;
+  pointer-events: auto !important;
+  cursor: text !important;
 }
 
-.form-control:focus {
-  border-color: #0d6efd;
-  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+.form-control:focus, input:focus, select:focus, textarea:focus {
+  border-color: #0d6efd !important;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25) !important;
+  outline: none !important;
 }
 
 /* Card styles */
 .card {
-  border: none;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-  transition: all 0.3s ease;
-  border-radius: 12px;
+  border: none !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08) !important;
+  transition: all 0.3s ease !important;
+  border-radius: 12px !important;
 }
 
 .card:hover {
-  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
 }
 
 .card-hover {
-  transition: all 0.3s ease;
+  transition: all 0.3s ease !important;
+  cursor: pointer !important;
 }
 
 .card-hover:hover {
-  transform: translateY(-5px);
+  transform: translateY(-5px) !important;
   box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
 }
 
 /* Parking spot styles */
 .parking-spot {
-  width: 50px;
-  height: 50px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 600;
-  color: white;
-  border: 2px solid transparent;
-  user-select: none;
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: white !important;
+  border: 2px solid transparent !important;
+  user-select: none !important;
+  pointer-events: auto !important;
 }
 
 .parking-spot.available {
-  background-color: #198754;
+  background-color: #198754 !important;
 }
 
 .parking-spot.occupied {
-  background-color: #dc3545;
+  background-color: #dc3545 !important;
 }
 
 .parking-spot.reserved {
-  background-color: #ffc107;
-  color: #000;
+  background-color: #ffc107 !important;
+  color: #000 !important;
 }
 
 .parking-spot:hover {
-  transform: scale(1.1);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  border-color: #0d6efd;
+  transform: scale(1.1) !important;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+  border-color: #0d6efd !important;
 }
 
 /* Navigation styles */
 .navbar {
-  backdrop-filter: blur(10px);
-  box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+  backdrop-filter: blur(10px) !important;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.1) !important;
 }
 
 .nav-link {
-  transition: all 0.3s ease;
-  border-radius: 8px;
-  margin: 0 4px;
-  cursor: pointer;
+  transition: all 0.3s ease !important;
+  border-radius: 8px !important;
+  margin: 0 4px !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
 }
 
 .nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  transform: translateY(-1px);
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  transform: translateY(-1px) !important;
 }
 
 .nav-link.active {
-  background-color: rgba(255, 255, 255, 0.2);
-  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  font-weight: 600 !important;
 }
 
 /* Table styles */
 .table-hover tbody tr:hover {
-  background-color: rgba(13, 110, 253, 0.05);
-  cursor: pointer;
+  background-color: rgba(13, 110, 253, 0.05) !important;
+  cursor: pointer !important;
 }
 
 /* Loading animations */
 .loading-spinner {
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  border-top: 2px solid white;
-  width: 16px;
-  height: 16px;
-  animation: spin 1s linear infinite;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 50% !important;
+  border-top: 2px solid white !important;
+  width: 16px !important;
+  height: 16px !important;
+  animation: spin 1s linear infinite !important;
 }
 
 @keyframes spin {
@@ -166,96 +187,185 @@ body {
 /* Animation classes */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease !important;
 }
 
 .fade-enter-from,
 .fade-leave-to {
-  opacity: 0;
+  opacity: 0 !important;
 }
 
 .slide-enter-active,
 .slide-leave-active {
-  transition: all 0.3s ease;
+  transition: all 0.3s ease !important;
 }
 
 .slide-enter-from {
-  transform: translateX(30px);
-  opacity: 0;
+  transform: translateX(30px) !important;
+  opacity: 0 !important;
 }
 
 .slide-leave-to {
-  transform: translateX(-30px);
-  opacity: 0;
+  transform: translateX(-30px) !important;
+  opacity: 0 !important;
 }
 
 /* Modal fixes */
 .modal {
-  z-index: 1050;
+  z-index: 1050 !important;
 }
 
 .modal-backdrop {
-  z-index: 1040;
+  z-index: 1040 !important;
 }
 
-/* Responsive improvements */
-@media (max-width: 768px) {
-  .container-fluid {
-    padding: 1rem;
-  }
-  
-  .card-body {
-    padding: 1rem;
-  }
-  
-  .btn-group-sm .btn {
-    padding: 0.2rem 0.4rem;
-    font-size: 0.75rem;
-  }
-  
-  .parking-spot {
-    width: 40px;
-    height: 40px;
-    font-size: 10px;
-  }
-}
-
-/* Fix for clickable elements */
-a, button, .btn, .nav-link, .dropdown-item {
-  cursor: pointer !important;
-  pointer-events: auto !important;
-}
-
-/* Ensure all interactive elements are clickable */
-[role="button"], .clickable {
-  cursor: pointer !important;
-  user-select: none;
-}
-
-/* Fix dropdown menus */
-.dropdown-menu {
-  z-index: 1060;
-}
-
-.dropdown-item {
-  cursor: pointer !important;
-  transition: background-color 0.15s ease-in-out;
-}
-
-.dropdown-item:hover {
-  background-color: #f8f9fa;
-}
-
-/* Fix form elements */
-input, select, textarea, button {
-  pointer-events: auto !important;
-}
-
-/* Ensure modals work properly */
 .modal.show {
   display: block !important;
 }
 
 .modal-dialog {
-  pointer-events: auto;
+  pointer-events: auto !important;
+}
+
+/* Dropdown fixes */
+.dropdown-menu {
+  z-index: 1060 !important;
+}
+
+.dropdown-item {
+  cursor: pointer !important;
+  transition: background-color 0.15s ease-in-out !important;
+  pointer-events: auto !important;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa !important;
+}
+
+/* Bootstrap button overrides */
+.btn-primary {
+  background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%) !important;
+  border: none !important;
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0b5ed7 0%, #0a58ca 100%) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(13, 110, 253, 0.4) !important;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #198754 0%, #157347 100%) !important;
+  border: none !important;
+  color: white !important;
+}
+
+.btn-success:hover:not(:disabled) {
+  background: linear-gradient(135deg, #157347 0%, #146c43 100%) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(25, 135, 84, 0.4) !important;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .container-fluid {
+    padding: 1rem !important;
+  }
+  
+  .card-body {
+    padding: 1rem !important;
+  }
+  
+  .btn-group-sm .btn {
+    padding: 0.2rem 0.4rem !important;
+    font-size: 0.75rem !important;
+  }
+  
+  .parking-spot {
+    width: 40px !important;
+    height: 40px !important;
+    font-size: 10px !important;
+  }
+}
+
+/* Force clickable elements */
+a, button, .btn, .nav-link, .dropdown-item, .router-link, [role="button"], .clickable {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+}
+
+/* Ensure all interactive elements work */
+input, select, textarea, button, .btn {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+input, select, textarea {
+  cursor: text !important;
+}
+
+/* Fix any potential overlay issues */
+.container, .container-fluid, .row, .col, .card, .modal {
+  pointer-events: auto !important;
+}
+
+/* Ensure forms work */
+form, .form-group, .input-group {
+  pointer-events: auto !important;
+}
+
+/* Fix signup link specifically */
+.signup-link, .login-link {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  color: #667eea !important;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+  transition: color 0.3s ease !important;
+}
+
+.signup-link:hover, .login-link:hover {
+  color: #5a67d8 !important;
+  text-decoration: underline !important;
+}
+
+/* Ensure router-link works */
+.router-link-active, .router-link-exact-active {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+/* Fix any z-index issues */
+.navbar, .modal, .dropdown-menu {
+  position: relative !important;
+  z-index: auto !important;
+}
+
+/* Ensure buttons in forms work */
+.signup-btn, .login-btn {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  user-select: none !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  border-radius: 12px !important;
+  padding: 0.875rem 2rem !important;
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  width: 100% !important;
+  margin-bottom: 1.5rem !important;
+  transition: all 0.3s ease !important;
+  color: white !important;
+}
+
+.signup-btn:hover:not(:disabled), .login-btn:hover:not(:disabled) {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3) !important;
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%) !important;
 }

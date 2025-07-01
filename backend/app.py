@@ -34,17 +34,12 @@ app.config['CELERY_RESULT_BACKEND'] = os.environ.get('REDIS_URL', 'redis://local
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-# CORS Configuration for production
-if os.environ.get('RAILWAY_ENVIRONMENT') or os.environ.get('RAILWAY_PROJECT_ID'):
-    # Production CORS settings
-    CORS(app, origins=[
-        "https://*.netlify.app",
-        "https://*.netlify.com",
-        os.environ.get('FRONTEND_URL', 'https://your-frontend-app.netlify.app')
-    ])
-else:
-    # Development CORS settings
-    CORS(app, origins=["http://localhost:5173"])
+# CORS Configuration - Allow all origins for now to fix the issue
+CORS(app, 
+     origins=["*"],
+     allow_headers=["Content-Type", "Authorization", "Access-Control-Allow-Credentials"],
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+     supports_credentials=True)
 
 # Redis client (will work when Redis is available)
 try:
@@ -183,6 +178,17 @@ def set_cache(key, data, expires=300):
         except:
             pass
 
+# Add CORS headers to all responses
+@app.after_request
+def after_request(response):
+    origin = request.headers.get('Origin')
+    if origin:
+        response.headers.add('Access-Control-Allow-Origin', origin)
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    response.headers.add('Access-Control-Allow-Credentials', 'true')
+    return response
+
 # API Routes
 @app.route('/')
 def index():
@@ -196,77 +202,101 @@ def health_check():
         'environment': os.environ.get('RAILWAY_ENVIRONMENT', 'development')
     })
 
-@app.route('/api/auth/login', methods=['POST'])
+@app.route('/api/auth/login', methods=['POST', 'OPTIONS'])
 def login():
-    data = request.get_json()
-    email = data.get('email')
-    password = data.get('password')
-    
-    # Check for admin login
-    if email == 'admin@parking.com' and password == 'admin':
-        admin_user = {
-            'id': 'admin',
-            'email': 'admin@parking.com',
-            'fullname': 'Administrator',
-            'address': 'Admin Office',
-            'pin_code': '000000',
-            'is_admin': True,
-            'created_at': datetime.utcnow().isoformat()
-        }
-        return jsonify({'success': True, 'user': admin_user})
-    
-    user = User.query.filter_by(email=email).first()
-    if user and check_password_hash(user.password, password):
-        is_admin = any(role.name == 'admin' for role in user.roles)
+    if request.method == 'OPTIONS':
+        return '', 200
+        
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'success': False, 'message': 'No data provided'}), 400
+            
+        email = data.get('email')
+        password = data.get('password')
+        
+        if not email or not password:
+            return jsonify({'success': False, 'message': 'Email and password required'}), 400
+        
+        # Check for admin login
+        if email == 'admin@parking.com' and password == 'admin':
+            admin_user = {
+                'id': 'admin',
+                'email': 'admin@parking.com',
+                'fullname': 'Administrator',
+                'address': 'Admin Office',
+                'pin_code': '000000',
+                'is_admin': True,
+                'created_at': datetime.utcnow().isoformat()
+            }
+            return jsonify({'success': True, 'user': admin_user})
+        
+        user = User.query.filter_by(email=email).first()
+        if user and check_password_hash(user.password, password):
+            is_admin = any(role.name == 'admin' for role in user.roles)
+            user_data = {
+                'id': str(user.id),
+                'email': user.email,
+                'fullname': user.fullname,
+                'address': user.address,
+                'pin_code': user.pin_code,
+                'is_admin': is_admin,
+                'created_at': user.created_at.isoformat()
+            }
+            return jsonify({'success': True, 'user': user_data})
+        
+        return jsonify({'success': False, 'message': 'Invalid credentials'}), 401
+        
+    except Exception as e:
+        print(f"Login error: {str(e)}")
+        return jsonify({'success': False, 'message': 'Server error'}), 500
+
+@app.route('/api/auth/register', methods=['POST', 'OPTIONS'])
+def register():
+    if request.method == 'OPTIONS':
+        return '', 200
+        
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'success': False, 'message': 'No data provided'}), 400
+        
+        # Check if user exists
+        existing_user = User.query.filter_by(email=data['email']).first()
+        if existing_user:
+            return jsonify({'success': False, 'message': 'Email already exists'}), 400
+        
+        # Generate unique identifier for Flask-Security
+        fs_uniquifier = str(uuid.uuid4())
+        
+        # Create new user
+        user = User(
+            email=data['email'],
+            password=generate_password_hash(data['password']),
+            fullname=data['fullname'],
+            address=data['address'],
+            pin_code=data['pin_code'],
+            fs_uniquifier=fs_uniquifier
+        )
+        
+        db.session.add(user)
+        db.session.commit()
+        
         user_data = {
             'id': str(user.id),
             'email': user.email,
             'fullname': user.fullname,
             'address': user.address,
             'pin_code': user.pin_code,
-            'is_admin': is_admin,
+            'is_admin': False,
             'created_at': user.created_at.isoformat()
         }
+        
         return jsonify({'success': True, 'user': user_data})
-    
-    return jsonify({'success': False, 'message': 'Invalid credentials'}), 401
-
-@app.route('/api/auth/register', methods=['POST'])
-def register():
-    data = request.get_json()
-    
-    # Check if user exists
-    existing_user = User.query.filter_by(email=data['email']).first()
-    if existing_user:
-        return jsonify({'success': False, 'message': 'Email already exists'}), 400
-    
-    # Generate unique identifier for Flask-Security
-    fs_uniquifier = str(uuid.uuid4())
-    
-    # Create new user
-    user = User(
-        email=data['email'],
-        password=generate_password_hash(data['password']),
-        fullname=data['fullname'],
-        address=data['address'],
-        pin_code=data['pin_code'],
-        fs_uniquifier=fs_uniquifier
-    )
-    
-    db.session.add(user)
-    db.session.commit()
-    
-    user_data = {
-        'id': str(user.id),
-        'email': user.email,
-        'fullname': user.fullname,
-        'address': user.address,
-        'pin_code': user.pin_code,
-        'is_admin': False,
-        'created_at': user.created_at.isoformat()
-    }
-    
-    return jsonify({'success': True, 'user': user_data})
+        
+    except Exception as e:
+        print(f"Registration error: {str(e)}")
+        return jsonify({'success': False, 'message': 'Server error'}), 500
 
 @app.route('/api/parking-lots', methods=['GET'])
 def get_parking_lots():
