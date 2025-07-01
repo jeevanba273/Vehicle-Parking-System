@@ -133,6 +133,7 @@ const handleSignup = async () => {
   try {
     const success = await authStore.signup({
       email: formData.email,
+      password: formData.password,
       fullname: formData.fullname,
       address: formData.address,
       pin_code: formData.pin_code

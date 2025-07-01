@@ -125,6 +125,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import ParkingGrid from '../../components/ParkingGrid.vue'
+import { getApiUrl } from '../../config/api'
 import type { ParkingLot } from '../../stores/parking'
 
 const parkingLots = ref<ParkingLot[]>([])
@@ -180,7 +181,7 @@ onMounted(() => {
 const loadParkingLots = async () => {
   loading.value = true
   try {
-    const response = await fetch('http://localhost:5000/api/parking-lots')
+    const response = await fetch(getApiUrl('/api/parking-lots'))
     if (response.ok) {
       parkingLots.value = await response.json()
     }

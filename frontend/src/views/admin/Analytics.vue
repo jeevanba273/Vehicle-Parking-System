@@ -162,6 +162,7 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue'
 import { Chart, registerables } from 'chart.js'
+import { getApiUrl } from '../../config/api'
 
 Chart.register(...registerables)
 
@@ -182,7 +183,7 @@ onMounted(async () => {
 const loadAnalytics = async () => {
   loading.value = true
   try {
-    const response = await fetch('http://localhost:5000/api/analytics')
+    const response = await fetch(getApiUrl('/api/analytics'))
     if (response.ok) {
       analytics.value = await response.json()
     }

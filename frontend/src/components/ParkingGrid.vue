@@ -71,8 +71,8 @@
       
       <div v-else-if="selectedSpot.status === 'occupied' && canRelease" class="mt-3">
         <p><strong>Vehicle:</strong> {{ selectedSpot.vehicle_number }}</p>
-        <p><strong>Booked At:</strong> {{ formatDateTime(selectedSpot.booked_at) }}</p>
-        <p><strong>Release Time:</strong> {{ formatDateTime(selectedSpot.release_time) }}</p>
+        <p><strong>Booked At:</strong> {{ formatDateTime(selectedSpot.booked_at || '') }}</p>
+        <p><strong>Release Time:</strong> {{ formatDateTime(selectedSpot.release_time || '') }}</p>
         <button @click="releaseSpot" class="btn btn-warning" :disabled="releasing">
           <span v-if="releasing" class="spinner-border spinner-border-sm me-2"></span>
           {{ releasing ? 'Releasing...' : 'Release Spot' }}
@@ -84,7 +84,6 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, reactive } from 'vue'
-import { useParkingStore } from '../stores/parking'
 import { useAuthStore } from '../stores/auth'
 import { getApiUrl } from '../config/api'
 import type { ParkingLot, ParkingSpot } from '../stores/parking'
@@ -94,7 +93,6 @@ const props = defineProps<{
   showBookingForm?: boolean
 }>()
 
-const parkingStore = useParkingStore()
 const authStore = useAuthStore()
 
 const spots = ref<ParkingSpot[]>([])
@@ -218,7 +216,7 @@ const getStatusColor = (status: string) => {
   }
 }
 
-const formatDateTime = (dateString: string | null) => {
+const formatDateTime = (dateString: string) => {
   if (!dateString) return 'N/A'
   return new Date(dateString).toLocaleString()
 }

@@ -157,6 +157,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '../../stores/auth'
+import { getApiUrl } from '../../config/api'
 
 interface Booking {
   id: string
@@ -229,7 +230,7 @@ const loadBookings = async () => {
   
   loading.value = true
   try {
-    const response = await fetch(`http://localhost:5000/api/users/${authStore.currentUser.id}/bookings`)
+    const response = await fetch(getApiUrl(`/api/users/${authStore.currentUser.id}/bookings`))
     if (response.ok) {
       bookings.value = await response.json()
     }
@@ -244,7 +245,7 @@ const releaseBooking = async (booking: Booking) => {
   releasing.value = booking.id
   
   try {
-    const response = await fetch(`http://localhost:5000/api/bookings/${booking.id}/release`, {
+    const response = await fetch(getApiUrl(`/api/bookings/${booking.id}/release`), {
       method: 'POST'
     })
     
