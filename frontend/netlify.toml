@@ -4,6 +4,7 @@
 
 [build.environment]
   NODE_VERSION = "18"
+  VITE_API_URL = "https://vehicle-parking-system-production.up.railway.app"
 
 [[redirects]]
   from = "/*"
@@ -17,11 +18,11 @@
 
 # Environment variables for production
 [context.production.environment]
-  VITE_API_URL = "https://your-backend-app.railway.app"
+  VITE_API_URL = "https://vehicle-parking-system-production.up.railway.app"
 
 # Environment variables for preview deployments
 [context.deploy-preview.environment]
-  VITE_API_URL = "https://your-backend-app.railway.app"
+  VITE_API_URL = "https://vehicle-parking-system-production.up.railway.app"
 
 # Headers for security
 [[headers]]

@@ -10,8 +10,8 @@ const getBaseUrl = () => {
     return import.meta.env.VITE_API_URL
   }
   
-  // Default production API URL (replace with your Railway backend URL)
-  return 'https://your-backend-app.railway.app'
+  // Production API URL - your Railway backend
+  return 'https://vehicle-parking-system-production.up.railway.app'
 }
 
 export const API_BASE_URL = getBaseUrl()
