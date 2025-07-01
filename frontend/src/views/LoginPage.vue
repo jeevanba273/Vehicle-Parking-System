@@ -357,7 +357,7 @@ const handleLogin = async () => {
   background: #f7fafc !important;
   border: 2px solid #e2e8f0 !important;
   border-radius: 12px !important;
-  padding: 0.875rem 1.25rem 0.875rem 4.5rem !important;
+  padding: 0.875rem 1.25rem 0.875rem 4rem !important;
   font-size: 1rem !important;
   transition: all 0.3s ease !important;
   width: 100% !important;
@@ -378,7 +378,7 @@ const handleLogin = async () => {
 .login-input::placeholder {
   color: #a0aec0 !important;
   font-size: 1rem !important;
-  padding-left: 0.5rem !important;
+  padding-left: 0.25rem !important;
 }
 
 .login-btn {
@@ -542,7 +542,7 @@ const handleLogin = async () => {
   }
   
   .login-input {
-    padding: 0.75rem 1rem 0.75rem 4rem !important;
+    padding: 0.75rem 1rem 0.75rem 3.5rem !important;
   }
   
   .input-icon {

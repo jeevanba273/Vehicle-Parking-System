@@ -228,7 +228,7 @@ const handleSignup = async () => {
 }
 
 .branding-section {
-  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
   align-items: center;
   justify-content: center;
   position: relative;
@@ -296,7 +296,7 @@ const handleSignup = async () => {
 }
 
 .benefit-item i {
-  color: #ffd700;
+  color: #00ff88;
   margin-right: 1rem;
   font-size: 1.2rem;
 }
@@ -410,7 +410,7 @@ const handleSignup = async () => {
   background: #f7fafc !important;
   border: 2px solid #e2e8f0 !important;
   border-radius: 12px !important;
-  padding: 0.75rem 1rem 0.75rem 4.5rem !important;
+  padding: 0.75rem 1rem 0.75rem 3.75rem !important;
   font-size: 1rem !important;
   transition: all 0.3s ease !important;
   width: 100% !important;
@@ -439,7 +439,7 @@ const handleSignup = async () => {
 
 .signup-input::placeholder {
   color: #a0aec0 !important;
-  padding-left: 0.5rem !important;
+  padding-left: 0.25rem !important;
 }
 
 .signup-btn {
@@ -552,7 +552,7 @@ const handleSignup = async () => {
   }
   
   .signup-input {
-    padding: 0.625rem 0.875rem 0.625rem 4rem !important;
+    padding: 0.625rem 0.875rem 0.625rem 3.5rem !important;
   }
   
   .input-icon {
