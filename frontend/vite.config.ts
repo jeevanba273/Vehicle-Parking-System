@@ -4,6 +4,10 @@ import vue from '@vitejs/plugin-vue'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
+  css: {
+    // No PostCSS configuration - using pure CSS
+    postcss: false
+  },
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
