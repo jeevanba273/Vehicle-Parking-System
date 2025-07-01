@@ -1,5 +1,5 @@
 // API Configuration for different environments
-const getApiUrl = () => {
+const getBaseUrl = () => {
   // Check if we're in development
   if (import.meta.env.DEV) {
     return 'http://localhost:5000'
@@ -14,19 +14,21 @@ const getApiUrl = () => {
   return 'https://your-backend-app.railway.app'
 }
 
-export const API_BASE_URL = getApiUrl()
+export const API_BASE_URL = getBaseUrl()
+
+// Helper function to get API URL with endpoint
+export const getApiUrl = (endpoint: string) => {
+  return `${API_BASE_URL}${endpoint}`
+}
 
 // API endpoints
 export const API_ENDPOINTS = {
   AUTH: {
-    LOGIN: `${API_BASE_URL}/api/auth/login`,
-    REGISTER: `${API_BASE_URL}/api/auth/register`,
+    LOGIN: getApiUrl('/api/auth/login'),
+    REGISTER: getApiUrl('/api/auth/register'),
   },
-  PARKING_LOTS: `${API_BASE_URL}/api/parking-lots`,
-  USERS: `${API_BASE_URL}/api/users`,
-  BOOKINGS: `${API_BASE_URL}/api/bookings`,
-  ANALYTICS: `${API_BASE_URL}/api/analytics`,
+  PARKING_LOTS: getApiUrl('/api/parking-lots'),
+  USERS: getApiUrl('/api/users'),
+  BOOKINGS: getApiUrl('/api/bookings'),
+  ANALYTICS: getApiUrl('/api/analytics'),
 }
-
-// Helper function to get API URL with endpoint
-export { getApiUrl }
