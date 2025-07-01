@@ -59,7 +59,7 @@
                     <input 
                       v-model="email" 
                       type="email" 
-                      class="form-control"
+                      class="form-control login-input"
                       placeholder="Enter your email"
                       required
                     />
@@ -73,7 +73,7 @@
                     <input 
                       v-model="password" 
                       type="password" 
-                      class="form-control"
+                      class="form-control login-input"
                       placeholder="Enter your password"
                       required
                     />
@@ -82,7 +82,7 @@
                 
                 <button 
                   type="submit" 
-                  class="btn btn-primary login-btn"
+                  class="login-btn"
                   :disabled="loading"
                 >
                   <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
@@ -270,6 +270,8 @@ const handleLogin = async () => {
 .login-form-container {
   width: 100%;
   max-width: 450px;
+  position: relative;
+  z-index: 10;
 }
 
 .mobile-logo {
@@ -295,6 +297,8 @@ const handleLogin = async () => {
   padding: 2.5rem;
   box-shadow: 0 20px 40px rgba(0,0,0,0.1);
   border: 1px solid #e9ecef;
+  position: relative;
+  z-index: 10;
 }
 
 .login-header {
@@ -315,8 +319,15 @@ const handleLogin = async () => {
   margin: 0;
 }
 
+.login-form {
+  position: relative;
+  z-index: 10;
+}
+
 .form-group {
   margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 10;
 }
 
 .form-label {
@@ -328,41 +339,46 @@ const handleLogin = async () => {
 
 .input-wrapper {
   position: relative;
+  z-index: 10;
 }
 
 .input-icon {
   position: absolute;
-  left: 1rem;
+  left: 1.25rem;
   top: 50%;
   transform: translateY(-50%);
   color: #a0aec0;
   font-size: 1.1rem;
-  z-index: 2;
+  z-index: 12;
   pointer-events: none;
 }
 
-.form-control {
-  background: #f7fafc;
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
+.login-input {
+  background: #f7fafc !important;
+  border: 2px solid #e2e8f0 !important;
+  border-radius: 12px !important;
   padding: 0.875rem 1.25rem 0.875rem 4.5rem !important;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  width: 100%;
-  line-height: 1.5;
+  font-size: 1rem !important;
+  transition: all 0.3s ease !important;
+  width: 100% !important;
+  line-height: 1.5 !important;
+  cursor: text !important;
+  pointer-events: auto !important;
+  position: relative !important;
+  z-index: 11 !important;
 }
 
-.form-control:focus {
-  background: #ffffff;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-  outline: none;
+.login-input:focus {
+  background: #ffffff !important;
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+  outline: none !important;
 }
 
-.form-control::placeholder {
-  color: #a0aec0;
-  font-size: 1rem;
-  padding-left: 0.5rem;
+.login-input::placeholder {
+  color: #a0aec0 !important;
+  font-size: 1rem !important;
+  padding-left: 0.5rem !important;
 }
 
 .login-btn {
@@ -381,6 +397,14 @@ const handleLogin = async () => {
   user-select: none !important;
   display: block !important;
   text-align: center !important;
+  position: relative !important;
+  z-index: 15 !important;
+  outline: none !important;
+  text-decoration: none !important;
+  font-family: inherit !important;
+  line-height: 1.5 !important;
+  vertical-align: middle !important;
+  touch-action: manipulation !important;
 }
 
 .login-btn:hover:not(:disabled) {
@@ -389,9 +413,14 @@ const handleLogin = async () => {
   background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%) !important;
 }
 
+.login-btn:active {
+  transform: translateY(0) !important;
+}
+
 .login-btn:disabled {
   opacity: 0.7 !important;
   cursor: not-allowed !important;
+  pointer-events: none !important;
 }
 
 .error-alert {
@@ -407,6 +436,8 @@ const handleLogin = async () => {
 .login-footer {
   text-align: center;
   margin-bottom: 2rem;
+  position: relative;
+  z-index: 10;
 }
 
 .login-footer p {
@@ -421,6 +452,8 @@ const handleLogin = async () => {
   transition: color 0.3s ease !important;
   cursor: pointer !important;
   pointer-events: auto !important;
+  position: relative !important;
+  z-index: 15 !important;
 }
 
 .signup-link:hover {
@@ -508,7 +541,7 @@ const handleLogin = async () => {
     padding: 1.5rem 1rem;
   }
   
-  .form-control {
+  .login-input {
     padding: 0.75rem 1rem 0.75rem 4rem !important;
   }
   

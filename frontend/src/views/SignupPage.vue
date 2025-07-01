@@ -60,7 +60,7 @@
                       <input 
                         v-model="formData.email" 
                         type="email" 
-                        class="form-control"
+                        class="form-control signup-input"
                         placeholder="Enter your email"
                         required
                       />
@@ -74,7 +74,7 @@
                       <input 
                         v-model="formData.password" 
                         type="password" 
-                        class="form-control"
+                        class="form-control signup-input"
                         placeholder="Create password"
                         required
                       />
@@ -89,7 +89,7 @@
                     <input 
                       v-model="formData.fullname" 
                       type="text" 
-                      class="form-control"
+                      class="form-control signup-input"
                       placeholder="Enter your full name"
                       required
                     />
@@ -102,7 +102,7 @@
                     <i class="bi bi-geo-alt-fill input-icon"></i>
                     <textarea 
                       v-model="formData.address" 
-                      class="form-control textarea-control"
+                      class="form-control signup-input textarea-control"
                       rows="3"
                       placeholder="Enter your address"
                       required
@@ -117,7 +117,7 @@
                     <input 
                       v-model="formData.pin_code" 
                       type="text" 
-                      class="form-control"
+                      class="form-control signup-input"
                       placeholder="Enter 6-digit PIN code"
                       pattern="[0-9]{6}"
                       maxlength="6"
@@ -128,7 +128,7 @@
                 
                 <button 
                   type="submit" 
-                  class="btn btn-primary signup-btn"
+                  class="signup-btn"
                   :disabled="loading"
                 >
                   <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
@@ -313,6 +313,8 @@ const handleSignup = async () => {
 .signup-form-container {
   width: 100%;
   max-width: 500px;
+  position: relative;
+  z-index: 10;
 }
 
 .mobile-logo {
@@ -338,6 +340,8 @@ const handleSignup = async () => {
   padding: 2.5rem;
   box-shadow: 0 20px 40px rgba(0,0,0,0.1);
   border: 1px solid #e9ecef;
+  position: relative;
+  z-index: 10;
 }
 
 .signup-header {
@@ -358,6 +362,11 @@ const handleSignup = async () => {
   margin: 0;
 }
 
+.signup-form {
+  position: relative;
+  z-index: 10;
+}
+
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -367,6 +376,8 @@ const handleSignup = async () => {
 
 .form-group {
   margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 10;
 }
 
 .form-row .form-group {
@@ -382,6 +393,7 @@ const handleSignup = async () => {
 
 .input-wrapper {
   position: relative;
+  z-index: 10;
 }
 
 .input-icon {
@@ -390,22 +402,27 @@ const handleSignup = async () => {
   top: 1rem;
   color: #a0aec0;
   font-size: 1.1rem;
-  z-index: 2;
+  z-index: 12;
+  pointer-events: none;
 }
 
-.form-control {
-  background: #f7fafc;
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
+.signup-input {
+  background: #f7fafc !important;
+  border: 2px solid #e2e8f0 !important;
+  border-radius: 12px !important;
   padding: 0.75rem 1rem 0.75rem 4.5rem !important;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  width: 100%;
+  font-size: 1rem !important;
+  transition: all 0.3s ease !important;
+  width: 100% !important;
+  cursor: text !important;
+  pointer-events: auto !important;
+  position: relative !important;
+  z-index: 11 !important;
 }
 
 .textarea-control {
-  resize: vertical;
-  min-height: 80px;
+  resize: vertical !important;
+  min-height: 80px !important;
   padding-top: 1rem !important;
 }
 
@@ -413,16 +430,16 @@ const handleSignup = async () => {
   top: 1rem;
 }
 
-.form-control:focus {
-  background: #ffffff;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-  outline: none;
+.signup-input:focus {
+  background: #ffffff !important;
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+  outline: none !important;
 }
 
-.form-control::placeholder {
-  color: #a0aec0;
-  padding-left: 0.5rem;
+.signup-input::placeholder {
+  color: #a0aec0 !important;
+  padding-left: 0.5rem !important;
 }
 
 .signup-btn {
@@ -441,6 +458,14 @@ const handleSignup = async () => {
   user-select: none !important;
   display: block !important;
   text-align: center !important;
+  position: relative !important;
+  z-index: 15 !important;
+  outline: none !important;
+  text-decoration: none !important;
+  font-family: inherit !important;
+  line-height: 1.5 !important;
+  vertical-align: middle !important;
+  touch-action: manipulation !important;
 }
 
 .signup-btn:hover:not(:disabled) {
@@ -449,9 +474,14 @@ const handleSignup = async () => {
   background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%) !important;
 }
 
+.signup-btn:active {
+  transform: translateY(0) !important;
+}
+
 .signup-btn:disabled {
   opacity: 0.7 !important;
   cursor: not-allowed !important;
+  pointer-events: none !important;
 }
 
 .error-alert {
@@ -466,6 +496,8 @@ const handleSignup = async () => {
 
 .signup-footer {
   text-align: center;
+  position: relative;
+  z-index: 10;
 }
 
 .signup-footer p {
@@ -480,6 +512,8 @@ const handleSignup = async () => {
   transition: color 0.3s ease !important;
   cursor: pointer !important;
   pointer-events: auto !important;
+  position: relative !important;
+  z-index: 15 !important;
 }
 
 .login-link:hover {
@@ -517,7 +551,7 @@ const handleSignup = async () => {
     padding: 1.5rem 1rem;
   }
   
-  .form-control {
+  .signup-input {
     padding: 0.625rem 0.875rem 0.625rem 4rem !important;
   }
   

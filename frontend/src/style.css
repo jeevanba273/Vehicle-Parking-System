@@ -20,8 +20,28 @@ body {
   background: #f8f9fa;
 }
 
-/* Critical button fixes */
-.btn, button, [type="button"], [type="submit"] {
+/* CRITICAL: Force all interactive elements to work */
+a, button, .btn, .nav-link, .dropdown-item, .router-link, [role="button"], .clickable,
+input, select, textarea, form, .form-group, .input-group, .container, .container-fluid,
+.row, .col, .card, .modal, .signup-link, .login-link, .signup-btn, .login-btn {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  position: relative !important;
+  z-index: auto !important;
+}
+
+input, select, textarea {
+  cursor: text !important;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+}
+
+/* CRITICAL: Button fixes with maximum priority */
+.btn, button, [type="button"], [type="submit"], .signup-btn, .login-btn {
   cursor: pointer !important;
   user-select: none !important;
   border: none !important;
@@ -36,34 +56,38 @@ body {
   touch-action: manipulation !important;
   background-image: none !important;
   white-space: nowrap !important;
+  text-decoration: none !important;
+  font-family: inherit !important;
 }
 
-.btn:focus, button:focus {
+.btn:focus, button:focus, .signup-btn:focus, .login-btn:focus {
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
 }
 
-.btn:hover, button:hover {
+.btn:hover, button:hover, .signup-btn:hover, .login-btn:hover {
   transform: translateY(-1px) !important;
 }
 
-.btn:active, button:active {
+.btn:active, button:active, .signup-btn:active, .login-btn:active {
   transform: translateY(0) !important;
 }
 
-.btn:disabled, button:disabled {
+.btn:disabled, button:disabled, .signup-btn:disabled, .login-btn:disabled {
   cursor: not-allowed !important;
   opacity: 0.6 !important;
   pointer-events: none !important;
 }
 
-/* Router link fixes */
-.router-link-active, .router-link-exact-active, a {
+/* CRITICAL: Router link fixes */
+.router-link-active, .router-link-exact-active, a, .signup-link, .login-link {
   cursor: pointer !important;
   pointer-events: auto !important;
   text-decoration: none !important;
+  position: relative !important;
+  z-index: 1 !important;
 }
 
-/* Form controls */
+/* CRITICAL: Form controls */
 .form-control, input, select, textarea {
   border: 2px solid #e2e8f0 !important;
   border-radius: 8px !important;
@@ -72,12 +96,82 @@ body {
   transition: all 0.3s ease !important;
   pointer-events: auto !important;
   cursor: text !important;
+  position: relative !important;
+  z-index: 1 !important;
 }
 
 .form-control:focus, input:focus, select:focus, textarea:focus {
   border-color: #0d6efd !important;
   box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25) !important;
   outline: none !important;
+}
+
+/* CRITICAL: Dropdown fixes with MAXIMUM z-index */
+.dropdown-menu {
+  z-index: 99999 !important;
+  position: absolute !important;
+  top: 100% !important;
+  right: 0 !important;
+  left: auto !important;
+  transform: translateZ(0) !important;
+  will-change: transform !important;
+  backface-visibility: hidden !important;
+  background: white !important;
+  border: none !important;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2) !important;
+  border-radius: 12px !important;
+  padding: 0.5rem 0 !important;
+  min-width: 220px !important;
+  margin-top: 0.5rem !important;
+}
+
+.dropdown-menu.show {
+  display: block !important;
+  z-index: 99999 !important;
+  position: absolute !important;
+  transform: translateZ(0) !important;
+  backface-visibility: hidden !important;
+}
+
+.dropdown {
+  position: relative !important;
+  z-index: 1000 !important;
+}
+
+.dropdown-item {
+  cursor: pointer !important;
+  transition: all 0.15s ease-in-out !important;
+  pointer-events: auto !important;
+  padding: 0.75rem 1rem !important;
+  border-radius: 8px !important;
+  margin: 0 0.5rem !important;
+  font-size: 0.9rem !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa !important;
+  transform: translateX(5px) !important;
+}
+
+/* CRITICAL: Navbar fixes */
+.navbar {
+  z-index: 1030 !important;
+  position: fixed !important;
+}
+
+.navbar .dropdown-menu {
+  z-index: 99999 !important;
+  position: absolute !important;
+  top: 100% !important;
+  right: 0 !important;
+  left: auto !important;
+  transform: none !important;
+}
+
+.navbar-nav .dropdown-menu {
+  z-index: 99999 !important;
 }
 
 /* Card styles */
@@ -227,21 +321,6 @@ body {
   pointer-events: auto !important;
 }
 
-/* Dropdown fixes */
-.dropdown-menu {
-  z-index: 1060 !important;
-}
-
-.dropdown-item {
-  cursor: pointer !important;
-  transition: background-color 0.15s ease-in-out !important;
-  pointer-events: auto !important;
-}
-
-.dropdown-item:hover {
-  background-color: #f8f9fa !important;
-}
-
 /* Bootstrap button overrides */
 .btn-primary {
   background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%) !important;
@@ -290,68 +369,15 @@ body {
   }
 }
 
-/* Force clickable elements */
-a, button, .btn, .nav-link, .dropdown-item, .router-link, [role="button"], .clickable {
-  cursor: pointer !important;
-  pointer-events: auto !important;
-  user-select: none !important;
-  -webkit-user-select: none !important;
-  -moz-user-select: none !important;
-  -ms-user-select: none !important;
-}
-
-/* Ensure all interactive elements work */
-input, select, textarea, button, .btn {
-  pointer-events: auto !important;
-  cursor: pointer !important;
-}
-
-input, select, textarea {
-  cursor: text !important;
-}
-
-/* Fix any potential overlay issues */
-.container, .container-fluid, .row, .col, .card, .modal {
-  pointer-events: auto !important;
-}
-
-/* Ensure forms work */
+/* CRITICAL: Ensure all forms and buttons work */
 form, .form-group, .input-group {
   pointer-events: auto !important;
-}
-
-/* Fix signup link specifically */
-.signup-link, .login-link {
-  cursor: pointer !important;
-  pointer-events: auto !important;
-  color: #667eea !important;
-  text-decoration: none !important;
-  font-weight: 600 !important;
-  transition: color 0.3s ease !important;
-}
-
-.signup-link:hover, .login-link:hover {
-  color: #5a67d8 !important;
-  text-decoration: underline !important;
-}
-
-/* Ensure router-link works */
-.router-link-active, .router-link-exact-active {
-  pointer-events: auto !important;
-  cursor: pointer !important;
-}
-
-/* Fix any z-index issues */
-.navbar, .modal, .dropdown-menu {
   position: relative !important;
-  z-index: auto !important;
+  z-index: 1 !important;
 }
 
-/* Ensure buttons in forms work */
+/* CRITICAL: Signup/Login specific button fixes */
 .signup-btn, .login-btn {
-  cursor: pointer !important;
-  pointer-events: auto !important;
-  user-select: none !important;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
   border: none !important;
   border-radius: 12px !important;
@@ -362,10 +388,143 @@ form, .form-group, .input-group {
   margin-bottom: 1.5rem !important;
   transition: all 0.3s ease !important;
   color: white !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  user-select: none !important;
+  display: block !important;
+  text-align: center !important;
+  position: relative !important;
+  z-index: 10 !important;
+  outline: none !important;
+  text-decoration: none !important;
+  font-family: inherit !important;
+  line-height: 1.5 !important;
+  vertical-align: middle !important;
+  touch-action: manipulation !important;
 }
 
 .signup-btn:hover:not(:disabled), .login-btn:hover:not(:disabled) {
   transform: translateY(-2px) !important;
   box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3) !important;
   background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%) !important;
+}
+
+.signup-btn:active, .login-btn:active {
+  transform: translateY(0) !important;
+}
+
+.signup-btn:disabled, .login-btn:disabled {
+  opacity: 0.7 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+/* CRITICAL: Link fixes */
+.signup-link, .login-link {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  color: #667eea !important;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+  transition: color 0.3s ease !important;
+  position: relative !important;
+  z-index: 10 !important;
+  display: inline !important;
+}
+
+.signup-link:hover, .login-link:hover {
+  color: #5a67d8 !important;
+  text-decoration: underline !important;
+}
+
+/* CRITICAL: Override any conflicting styles */
+.router-link-active, .router-link-exact-active {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* CRITICAL: Ensure no overlay issues */
+.container, .container-fluid, .row, .col, .card, .modal {
+  pointer-events: auto !important;
+  position: relative !important;
+}
+
+/* CRITICAL: Force maximum z-index for dropdowns */
+.dropdown-menu {
+  z-index: 999999 !important;
+  position: fixed !important;
+  transform: translateZ(0) !important;
+  will-change: transform !important;
+  backface-visibility: hidden !important;
+}
+
+/* CRITICAL: Prevent any element from blocking dropdowns */
+.main-content, .container-fluid, .card, .row, .col {
+  z-index: 1 !important;
+  position: relative !important;
+}
+
+.navbar, .dropdown-menu {
+  z-index: 999999 !important;
+}
+
+/* CRITICAL: Input field improvements */
+.form-control {
+  background: #f7fafc !important;
+  border: 2px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  font-size: 1rem !important;
+  transition: all 0.3s ease !important;
+  width: 100% !important;
+  line-height: 1.5 !important;
+  pointer-events: auto !important;
+  cursor: text !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.form-control:focus {
+  background: #ffffff !important;
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+  outline: none !important;
+}
+
+.form-control::placeholder {
+  color: #a0aec0 !important;
+  font-size: 1rem !important;
+}
+
+/* CRITICAL: Ensure all elements are properly layered */
+.fixed-navbar {
+  z-index: 1030 !important;
+}
+
+.dropdown-menu.show {
+  z-index: 999999 !important;
+  position: fixed !important;
+}
+
+/* CRITICAL: Force button functionality */
+button[type="submit"], .btn[type="submit"], input[type="submit"] {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  user-select: none !important;
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+/* CRITICAL: Ensure forms submit properly */
+form {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+form button, form .btn, form input[type="submit"] {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  position: relative !important;
+  z-index: 10 !important;
 }

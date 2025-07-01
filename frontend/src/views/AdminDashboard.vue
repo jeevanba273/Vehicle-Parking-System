@@ -46,7 +46,7 @@
           </div>
           
           <div class="navbar-nav">
-            <div class="nav-item dropdown">
+            <div class="nav-item dropdown user-dropdown-container">
               <a 
                 class="nav-link dropdown-toggle user-dropdown" 
                 href="#" 
@@ -64,18 +64,18 @@
                 </li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
-                  <a class="dropdown-item" href="#">
+                  <a class="dropdown-item" href="#" @click.prevent>
                     <i class="bi bi-person me-2"></i>Profile
                   </a>
                 </li>
                 <li>
-                  <a class="dropdown-item" href="#">
+                  <a class="dropdown-item" href="#" @click.prevent>
                     <i class="bi bi-gear me-2"></i>Settings
                   </a>
                 </li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
-                  <a class="dropdown-item text-danger logout-item" @click="logout" href="#">
+                  <a class="dropdown-item text-danger logout-item" @click.prevent="logout" href="#">
                     <i class="bi bi-box-arrow-right me-2"></i>Logout
                   </a>
                 </li>
@@ -128,6 +128,8 @@ const logout = () => {
 .main-content {
   margin-top: 70px;
   min-height: calc(100vh - 70px);
+  position: relative;
+  z-index: 1;
 }
 
 .nav-link {
@@ -162,20 +164,27 @@ const logout = () => {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
+.user-dropdown-container {
+  position: relative;
+  z-index: 1000;
+}
+
 .user-dropdown-menu {
   border: none !important;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2) !important;
   border-radius: 12px !important;
   padding: 0.5rem 0 !important;
   min-width: 220px !important;
-  z-index: 9999 !important;
-  position: absolute !important;
-  top: 100% !important;
-  right: 0 !important;
+  z-index: 999999 !important;
+  position: fixed !important;
+  top: auto !important;
+  right: 1rem !important;
+  left: auto !important;
   margin-top: 0.5rem !important;
   background: white !important;
   transform: translateZ(0) !important;
   will-change: transform !important;
+  backface-visibility: hidden !important;
 }
 
 .dropdown-header {
@@ -194,6 +203,8 @@ const logout = () => {
   font-size: 0.9rem !important;
   cursor: pointer !important;
   pointer-events: auto !important;
+  position: relative !important;
+  z-index: 1 !important;
 }
 
 .dropdown-item:hover {
@@ -214,8 +225,8 @@ const logout = () => {
 /* Force dropdown to appear above everything */
 .dropdown-menu.show {
   display: block !important;
-  z-index: 9999 !important;
-  position: absolute !important;
+  z-index: 999999 !important;
+  position: fixed !important;
   transform: translateZ(0) !important;
   backface-visibility: hidden !important;
 }
@@ -223,6 +234,27 @@ const logout = () => {
 .dropdown {
   position: relative !important;
   z-index: 1000 !important;
+}
+
+/* Override Bootstrap completely */
+.navbar .dropdown-menu {
+  z-index: 999999 !important;
+  position: fixed !important;
+  top: 70px !important;
+  right: 1rem !important;
+  left: auto !important;
+  transform: none !important;
+}
+
+.navbar-nav .dropdown-menu {
+  z-index: 999999 !important;
+  position: fixed !important;
+}
+
+/* Ensure content stays below dropdown */
+.container-fluid {
+  position: relative;
+  z-index: 1;
 }
 
 /* Fix navbar collapse on mobile */
@@ -280,18 +312,14 @@ const logout = () => {
   transition: all 0.3s ease;
 }
 
-/* Ensure dropdown stays on top */
-.navbar .dropdown-menu {
-  z-index: 9999 !important;
-  position: absolute !important;
-  top: 100% !important;
-  right: 0 !important;
-  left: auto !important;
-  transform: none !important;
-}
-
-/* Override Bootstrap z-index */
-.navbar-nav .dropdown-menu {
-  z-index: 9999 !important;
+/* Force dropdown positioning */
+@media (min-width: 992px) {
+  .user-dropdown-menu {
+    position: fixed !important;
+    top: 70px !important;
+    right: 1rem !important;
+    left: auto !important;
+    z-index: 999999 !important;
+  }
 }
 </style>
