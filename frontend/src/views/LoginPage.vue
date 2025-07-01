@@ -332,23 +332,24 @@ const handleLogin = async () => {
 
 .input-icon {
   position: absolute;
-  left: 1rem;
+  left: 1.25rem;
   top: 50%;
   transform: translateY(-50%);
   color: #a0aec0;
   font-size: 1.1rem;
   z-index: 2;
+  pointer-events: none;
 }
 
 .form-control {
   background: #f7fafc;
   border: 2px solid #e2e8f0;
   border-radius: 12px;
-  padding: 0.75rem 1rem 0.75rem 3.5rem;
+  padding: 0.875rem 1.25rem 0.875rem 4rem;
   font-size: 1rem;
   transition: all 0.3s ease;
   width: 100%;
-  text-indent: 0.5rem;
+  line-height: 1.5;
 }
 
 .form-control:focus {
@@ -360,8 +361,7 @@ const handleLogin = async () => {
 
 .form-control::placeholder {
   color: #a0aec0;
-  padding-left: 0.5rem;
-  text-indent: 0.5rem;
+  font-size: 1rem;
 }
 
 .login-btn {
@@ -502,11 +502,11 @@ const handleLogin = async () => {
   }
   
   .form-control {
-    padding: 0.625rem 0.875rem 0.625rem 3rem;
+    padding: 0.75rem 1rem 0.75rem 3.5rem;
   }
   
   .input-icon {
-    left: 0.875rem;
+    left: 1rem;
     font-size: 1rem;
   }
 }
