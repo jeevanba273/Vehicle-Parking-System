@@ -1,5 +1,3 @@
-@import 'bootstrap/dist/css/bootstrap.min.css';
-@import 'bootstrap-icons/font/bootstrap-icons.css';
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
@@ -22,10 +20,58 @@ body {
   background: #f8f9fa;
 }
 
-.glass-effect {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+/* Button fixes */
+.btn {
+  cursor: pointer !important;
+  user-select: none;
+  border: none;
+  outline: none;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.btn:focus {
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.6;
+}
+
+/* Form controls */
+.form-control {
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Card styles */
+.card {
+  border: none;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+  border-radius: 12px;
+}
+
+.card:hover {
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
 }
 
 .card-hover {
@@ -37,15 +83,7 @@ body {
   box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
 }
 
-.btn-hover {
-  transition: all 0.3s ease;
-}
-
-.btn-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-}
-
+/* Parking spot styles */
 .parking-spot {
   width: 50px;
   height: 50px;
@@ -59,27 +97,73 @@ body {
   font-weight: 600;
   color: white;
   border: 2px solid transparent;
+  user-select: none;
 }
 
 .parking-spot.available {
-  background-color: var(--bs-success);
+  background-color: #198754;
 }
 
 .parking-spot.occupied {
-  background-color: var(--bs-danger);
+  background-color: #dc3545;
 }
 
 .parking-spot.reserved {
-  background-color: var(--bs-warning);
-  color: var(--bs-dark);
+  background-color: #ffc107;
+  color: #000;
 }
 
 .parking-spot:hover {
   transform: scale(1.1);
   box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  border-color: var(--bs-primary);
+  border-color: #0d6efd;
 }
 
+/* Navigation styles */
+.navbar {
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+}
+
+.nav-link {
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  margin: 0 4px;
+  cursor: pointer;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.nav-link.active {
+  background-color: rgba(255, 255, 255, 0.2);
+  font-weight: 600;
+}
+
+/* Table styles */
+.table-hover tbody tr:hover {
+  background-color: rgba(13, 110, 253, 0.05);
+  cursor: pointer;
+}
+
+/* Loading animations */
+.loading-spinner {
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top: 2px solid white;
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Animation classes */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease;
@@ -105,68 +189,13 @@ body {
   opacity: 0;
 }
 
-/* Custom Bootstrap overrides */
-.btn-primary {
-  background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
-  border: none;
-  box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+/* Modal fixes */
+.modal {
+  z-index: 1050;
 }
 
-.btn-primary:hover {
-  background: linear-gradient(135deg, #0b5ed7 0%, #0a58ca 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(13, 110, 253, 0.4);
-}
-
-.btn-success {
-  background: linear-gradient(135deg, #198754 0%, #157347 100%);
-  border: none;
-  box-shadow: 0 4px 15px rgba(25, 135, 84, 0.3);
-}
-
-.btn-success:hover {
-  background: linear-gradient(135deg, #157347 0%, #146c43 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(25, 135, 84, 0.4);
-}
-
-.navbar {
-  backdrop-filter: blur(10px);
-  box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-}
-
-.card {
-  border: none;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-  transition: all 0.3s ease;
-}
-
-.card:hover {
-  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-}
-
-.form-control:focus {
-  border-color: #0d6efd;
-  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-}
-
-.table-hover tbody tr:hover {
-  background-color: rgba(13, 110, 253, 0.05);
-}
-
-/* Loading animations */
-.loading-spinner {
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  border-top: 2px solid white;
-  width: 16px;
-  height: 16px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.modal-backdrop {
+  z-index: 1040;
 }
 
 /* Responsive improvements */
@@ -183,4 +212,50 @@ body {
     padding: 0.2rem 0.4rem;
     font-size: 0.75rem;
   }
+  
+  .parking-spot {
+    width: 40px;
+    height: 40px;
+    font-size: 10px;
+  }
+}
+
+/* Fix for clickable elements */
+a, button, .btn, .nav-link, .dropdown-item {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+
+/* Ensure all interactive elements are clickable */
+[role="button"], .clickable {
+  cursor: pointer !important;
+  user-select: none;
+}
+
+/* Fix dropdown menus */
+.dropdown-menu {
+  z-index: 1060;
+}
+
+.dropdown-item {
+  cursor: pointer !important;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+/* Fix form elements */
+input, select, textarea, button {
+  pointer-events: auto !important;
+}
+
+/* Ensure modals work properly */
+.modal.show {
+  display: block !important;
+}
+
+.modal-dialog {
+  pointer-events: auto;
 }

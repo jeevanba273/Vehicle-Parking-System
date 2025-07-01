@@ -161,6 +161,7 @@ const handleLogin = async () => {
       error.value = 'Invalid email or password. Please check your credentials and try again.'
     }
   } catch (err) {
+    console.error('Login error:', err)
     error.value = 'An error occurred during login. Please try again.'
   } finally {
     loading.value = false
@@ -382,6 +383,7 @@ const handleLogin = async () => {
   margin-bottom: 1.5rem;
   transition: all 0.3s ease;
   color: white;
+  cursor: pointer;
 }
 
 .login-btn:hover:not(:disabled) {
