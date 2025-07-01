@@ -344,10 +344,11 @@ const handleLogin = async () => {
   background: #f7fafc;
   border: 2px solid #e2e8f0;
   border-radius: 12px;
-  padding: 0.75rem 1rem 0.75rem 3rem;
+  padding: 0.75rem 1rem 0.75rem 3.5rem;
   font-size: 1rem;
   transition: all 0.3s ease;
   width: 100%;
+  text-indent: 0.5rem;
 }
 
 .form-control:focus {
@@ -359,6 +360,8 @@ const handleLogin = async () => {
 
 .form-control::placeholder {
   color: #a0aec0;
+  padding-left: 0.5rem;
+  text-indent: 0.5rem;
 }
 
 .login-btn {
@@ -499,7 +502,7 @@ const handleLogin = async () => {
   }
   
   .form-control {
-    padding: 0.625rem 0.875rem 0.625rem 2.5rem;
+    padding: 0.625rem 0.875rem 0.625rem 3rem;
   }
   
   .input-icon {
