@@ -1,55 +1,104 @@
 <template>
   <div class="parking-grid-container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h4 class="mb-0">{{ lot.name }} - Parking Grid</h4>
-      <div class="d-flex gap-3">
-        <div class="d-flex align-items-center">
-          <div class="parking-spot available me-2" style="width: 20px; height: 20px;"></div>
-          <small>Available</small>
+    <div class="grid-header mb-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h4 class="grid-title mb-1">{{ lot.name }} - Parking Grid</h4>
+          <p class="grid-subtitle text-muted">Real-time spot management and booking</p>
         </div>
-        <div class="d-flex align-items-center">
-          <div class="parking-spot occupied me-2" style="width: 20px; height: 20px;"></div>
-          <small>Occupied</small>
+        <div class="grid-stats">
+          <div class="stat-item">
+            <span class="stat-number text-success">{{ availableCount }}</span>
+            <span class="stat-label">Available</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-number text-danger">{{ occupiedCount }}</span>
+            <span class="stat-label">Occupied</span>
+          </div>
         </div>
-        <div class="d-flex align-items-center">
-          <div class="parking-spot reserved me-2" style="width: 20px; height: 20px;"></div>
-          <small>Reserved</small>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend-section mb-4">
+      <div class="legend-items">
+        <div class="legend-item">
+          <div class="legend-spot available"></div>
+          <span>Available</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-spot occupied"></div>
+          <span>Occupied</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-spot reserved"></div>
+          <span>Reserved</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-spot selected"></div>
+          <span>Selected</span>
         </div>
       </div>
     </div>
     
-    <div class="parking-grid">
-      <div
-        v-for="spot in spots"
-        :key="spot.id"
-        :class="['parking-spot', spot.status]"
-        :title="`Spot ${spot.spot_number} - ${spot.status}`"
-        @click="selectSpot(spot)"
-      >
-        {{ spot.spot_number }}
+    <!-- Parking Grid -->
+    <div class="parking-grid-wrapper">
+      <div class="parking-grid">
+        <div
+          v-for="spot in spots"
+          :key="spot.id"
+          :class="['parking-spot', spot.status, { 'selected': selectedSpot?.id === spot.id }]"
+          :title="`Spot ${spot.spot_number} - ${spot.status}`"
+          @click="selectSpot(spot)"
+        >
+          <div class="spot-number">{{ spot.spot_number }}</div>
+          <div v-if="spot.status === 'occupied'" class="spot-timer">
+            <i class="bi bi-clock"></i>
+          </div>
+        </div>
       </div>
     </div>
     
-    <div v-if="selectedSpot" class="mt-4 p-3 border rounded bg-light">
-      <h6>Selected Spot: {{ selectedSpot.spot_number }}</h6>
-      <p class="mb-2">Status: <span :class="`badge bg-${getStatusColor(selectedSpot.status)}`">{{ selectedSpot.status }}</span></p>
+    <!-- Spot Details Panel -->
+    <div v-if="selectedSpot" class="spot-details-panel">
+      <div class="panel-header">
+        <h6 class="panel-title">
+          <i class="bi bi-info-circle me-2"></i>
+          Spot {{ selectedSpot.spot_number }} Details
+        </h6>
+        <div class="panel-status">
+          <span :class="`badge status-${selectedSpot.status}`">
+            {{ selectedSpot.status.toUpperCase() }}
+          </span>
+        </div>
+      </div>
       
-      <div v-if="selectedSpot.status === 'available' && showBookingForm" class="mt-3">
+      <!-- Available Spot - Booking Form -->
+      <div v-if="selectedSpot.status === 'available' && showBookingForm" class="booking-section">
         <form @submit.prevent="bookSpot" class="booking-form">
+          <div class="form-header">
+            <h6><i class="bi bi-plus-circle me-2"></i>Book This Spot</h6>
+          </div>
+          
           <div class="row g-3">
             <div class="col-md-6">
-              <label class="form-label fw-medium">Vehicle Number</label>
-              <input
-                v-model="bookingForm.vehicleNumber"
-                type="text"
-                class="form-control booking-input"
-                required
-                placeholder="Enter vehicle number"
-              />
+              <label class="form-label">Vehicle Number</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-car-front"></i></span>
+                <input
+                  v-model="bookingForm.vehicleNumber"
+                  type="text"
+                  class="form-control booking-input"
+                  required
+                  placeholder="Enter vehicle number"
+                />
+              </div>
             </div>
+            
             <div class="col-md-6">
-              <label class="form-label fw-medium">Parking Duration</label>
-              <div class="time-input-container">
+              <label class="form-label">Parking Duration</label>
+              <div class="duration-controls">
                 <div class="row g-2">
                   <div class="col-6">
                     <div class="input-group">
@@ -81,134 +130,142 @@
                     </div>
                   </div>
                 </div>
-                <div class="mt-2">
+                
+                <!-- Quick Duration Buttons -->
+                <div class="quick-duration-buttons mt-2">
+                  <button type="button" class="btn btn-outline-primary btn-sm" @click="setQuickTime(0.25)">15min</button>
+                  <button type="button" class="btn btn-outline-primary btn-sm" @click="setQuickTime(0.5)">30min</button>
+                  <button type="button" class="btn btn-outline-primary btn-sm" @click="setQuickTime(1)">1hr</button>
+                  <button type="button" class="btn btn-outline-primary btn-sm" @click="setQuickTime(2)">2hrs</button>
+                  <button type="button" class="btn btn-outline-primary btn-sm" @click="setQuickTime(4)">4hrs</button>
+                  <button type="button" class="btn btn-outline-primary btn-sm" @click="setQuickTime(8)">8hrs</button>
+                </div>
+                
+                <div class="duration-display mt-2">
                   <small class="text-muted">
-                    Total Duration: {{ formatDuration(bookingForm.totalHours) }}
-                    <span v-if="bookingForm.totalHours < 0.25" class="text-warning">
-                      (Minimum 15 minutes)
+                    Total Duration: <strong>{{ formatDuration(bookingForm.totalHours) }}</strong>
+                    <span v-if="bookingForm.totalHours < 0.25" class="text-warning ms-2">
+                      (Minimum 15 minutes required)
                     </span>
                   </small>
                 </div>
-                <div class="mt-1">
-                  <div class="btn-group btn-group-sm" role="group">
-                    <button type="button" class="btn btn-outline-secondary" @click="setQuickTime(0.25)">15min</button>
-                    <button type="button" class="btn btn-outline-secondary" @click="setQuickTime(0.5)">30min</button>
-                    <button type="button" class="btn btn-outline-secondary" @click="setQuickTime(1)">1hr</button>
-                    <button type="button" class="btn btn-outline-secondary" @click="setQuickTime(2)">2hrs</button>
-                    <button type="button" class="btn btn-outline-secondary" @click="setQuickTime(4)">4hrs</button>
-                    <button type="button" class="btn btn-outline-secondary" @click="setQuickTime(8)">8hrs</button>
+              </div>
+            </div>
+            
+            <!-- Cost Summary -->
+            <div class="col-12">
+              <div class="cost-summary">
+                <div class="cost-header">
+                  <h6><i class="bi bi-calculator me-2"></i>Cost Breakdown</h6>
+                </div>
+                <div class="cost-details">
+                  <div class="cost-row">
+                    <span>Hourly Rate:</span>
+                    <span class="cost-value">${{ lot.price_per_hour.toFixed(2) }}/hour</span>
+                  </div>
+                  <div class="cost-row">
+                    <span>Duration:</span>
+                    <span class="cost-value">{{ formatDuration(Math.max(0.25, bookingForm.totalHours)) }}</span>
+                  </div>
+                  <div class="cost-row total-row">
+                    <span>Total Cost:</span>
+                    <span class="total-cost">${{ calculateTotalCost().toFixed(2) }}</span>
                   </div>
                 </div>
               </div>
             </div>
+            
+            <!-- Action Buttons -->
             <div class="col-12">
-              <div class="cost-summary p-3 bg-white rounded border">
-                <div class="row">
-                  <div class="col-6">
-                    <small class="text-muted">Rate per hour:</small>
-                    <div class="fw-bold">${{ lot.price_per_hour.toFixed(2) }}</div>
-                  </div>
-                  <div class="col-6">
-                    <small class="text-muted">Duration:</small>
-                    <div class="fw-bold">{{ formatDuration(bookingForm.totalHours) }}</div>
-                  </div>
-                </div>
-                <hr class="my-2">
-                <div class="d-flex justify-content-between align-items-center">
-                  <span class="fw-bold">Total Cost:</span>
-                  <span class="h5 fw-bold text-primary mb-0">${{ calculateTotalCost().toFixed(2) }}</span>
-                </div>
+              <div class="booking-actions">
+                <button 
+                  type="submit" 
+                  class="btn btn-success btn-lg booking-submit-btn" 
+                  :disabled="booking || bookingForm.totalHours < 0.25"
+                >
+                  <span v-if="booking" class="spinner-border spinner-border-sm me-2"></span>
+                  <i v-else class="bi bi-check-circle me-2"></i>
+                  {{ booking ? 'Booking...' : 'Confirm Booking' }}
+                </button>
+                <button type="button" @click="cancelBooking" class="btn btn-outline-secondary btn-lg">
+                  <i class="bi bi-x-circle me-2"></i>Cancel
+                </button>
               </div>
-            </div>
-            <div class="col-12">
-              <button 
-                type="submit" 
-                class="btn btn-primary me-2 booking-submit-btn" 
-                :disabled="booking || bookingForm.totalHours < 0.25"
-              >
-                <span v-if="booking" class="spinner-border spinner-border-sm me-2"></span>
-                <i v-else class="bi bi-check-circle me-2"></i>
-                {{ booking ? 'Booking...' : 'Book Spot' }}
-              </button>
-              <button type="button" @click="cancelBooking" class="btn btn-secondary">
-                <i class="bi bi-x-circle me-2"></i>Cancel
-              </button>
             </div>
           </div>
         </form>
       </div>
       
-      <div v-else-if="selectedSpot.status === 'occupied'" class="mt-3">
-        <div class="occupied-info p-3 bg-white rounded border">
-          <div class="row g-2">
-            <div class="col-md-6">
-              <small class="text-muted">Vehicle:</small>
-              <div class="fw-bold">{{ selectedSpot.vehicle_number }}</div>
+      <!-- Occupied Spot Details -->
+      <div v-else-if="selectedSpot.status === 'occupied'" class="occupied-details">
+        <div class="occupied-info">
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Vehicle Number</label>
+              <div class="info-value">{{ selectedSpot.vehicle_number }}</div>
             </div>
-            <div class="col-md-6">
-              <small class="text-muted">Booked At:</small>
-              <div class="fw-bold">{{ formatDateTime(selectedSpot.booked_at || '') }}</div>
+            <div class="info-item">
+              <label>Booked At</label>
+              <div class="info-value">{{ formatDateTime(selectedSpot.booked_at || '') }}</div>
             </div>
-            <div class="col-md-6">
-              <small class="text-muted">Release Time:</small>
-              <div class="fw-bold">{{ formatDateTime(selectedSpot.release_time || '') }}</div>
+            <div class="info-item">
+              <label>Release Time</label>
+              <div class="info-value">{{ formatDateTime(selectedSpot.release_time || '') }}</div>
             </div>
-            <div class="col-md-6">
-              <small class="text-muted">Time Remaining:</small>
-              <div class="fw-bold" :class="getTimeRemainingColor(selectedSpot.release_time || '')">
+            <div class="info-item">
+              <label>Time Remaining</label>
+              <div class="info-value" :class="getTimeRemainingColor(selectedSpot.release_time || '')">
                 {{ getTimeRemaining(selectedSpot.release_time || '') }}
               </div>
             </div>
+          </div>
+          
+          <!-- User Details for Admin -->
+          <div v-if="isAdmin && selectedSpot.user_details" class="user-details-section">
+            <div class="section-header">
+              <h6><i class="bi bi-person-circle me-2"></i>User Information</h6>
+            </div>
+            <div class="user-info-grid">
+              <div class="user-info-item">
+                <label>Name</label>
+                <div class="user-info-value">{{ selectedSpot.user_details.fullname }}</div>
+              </div>
+              <div class="user-info-item">
+                <label>Email</label>
+                <div class="user-info-value">{{ selectedSpot.user_details.email }}</div>
+              </div>
+              <div class="user-info-item">
+                <label>Address</label>
+                <div class="user-info-value">{{ selectedSpot.user_details.address }}</div>
+              </div>
+              <div class="user-info-item">
+                <label>PIN Code</label>
+                <div class="user-info-value">{{ selectedSpot.user_details.pin_code }}</div>
+              </div>
+            </div>
             
-            <!-- Show user details for admin -->
-            <div v-if="isAdmin && selectedSpot.user_details" class="col-12 mt-3">
-              <div class="user-details-card p-3 bg-info bg-opacity-10 rounded border border-info">
-                <h6 class="text-info mb-2">
-                  <i class="bi bi-person-circle me-2"></i>User Details
-                </h6>
-                <div class="row g-2">
-                  <div class="col-md-6">
-                    <small class="text-muted">Name:</small>
-                    <div class="fw-bold">{{ selectedSpot.user_details.fullname }}</div>
-                  </div>
-                  <div class="col-md-6">
-                    <small class="text-muted">Email:</small>
-                    <div class="fw-bold">{{ selectedSpot.user_details.email }}</div>
-                  </div>
-                  <div class="col-md-6">
-                    <small class="text-muted">Address:</small>
-                    <div class="fw-bold">{{ selectedSpot.user_details.address }}</div>
-                  </div>
-                  <div class="col-md-6">
-                    <small class="text-muted">PIN Code:</small>
-                    <div class="fw-bold">{{ selectedSpot.user_details.pin_code }}</div>
-                  </div>
+            <!-- Booking Details -->
+            <div v-if="selectedSpot.booking_details" class="booking-details-section">
+              <div class="section-header">
+                <h6><i class="bi bi-calendar-check me-2"></i>Booking Information</h6>
+              </div>
+              <div class="booking-info-grid">
+                <div class="booking-info-item">
+                  <label>Duration</label>
+                  <div class="booking-info-value">{{ formatDuration(selectedSpot.booking_details.duration_hours) }}</div>
                 </div>
-                
-                <!-- Show booking details -->
-                <div v-if="selectedSpot.booking_details" class="mt-3 pt-3 border-top border-info">
-                  <h6 class="text-info mb-2">
-                    <i class="bi bi-calendar-check me-2"></i>Booking Details
-                  </h6>
-                  <div class="row g-2">
-                    <div class="col-md-6">
-                      <small class="text-muted">Duration:</small>
-                      <div class="fw-bold">{{ formatDuration(selectedSpot.booking_details.duration_hours) }}</div>
-                    </div>
-                    <div class="col-md-6">
-                      <small class="text-muted">Total Cost:</small>
-                      <div class="fw-bold text-success">${{ selectedSpot.booking_details.total_cost.toFixed(2) }}</div>
-                    </div>
-                  </div>
+                <div class="booking-info-item">
+                  <label>Total Cost</label>
+                  <div class="booking-info-value cost-highlight">${{ selectedSpot.booking_details.total_cost.toFixed(2) }}</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
         
-        <!-- Release button for user's own booking -->
-        <div v-if="canRelease" class="mt-3">
-          <button @click="releaseSpot" class="btn btn-warning" :disabled="releasing">
+        <!-- Release Button for User's Own Booking -->
+        <div v-if="canRelease" class="release-section">
+          <button @click="releaseSpot" class="btn btn-warning btn-lg release-btn" :disabled="releasing">
             <span v-if="releasing" class="spinner-border spinner-border-sm me-2"></span>
             <i v-else class="bi bi-unlock me-2"></i>
             {{ releasing ? 'Releasing...' : 'Release Spot' }}
@@ -245,6 +302,8 @@ const bookingForm = reactive({
 })
 
 const isAdmin = computed(() => authStore.isAdmin)
+const availableCount = computed(() => spots.value.filter(s => s.status === 'available').length)
+const occupiedCount = computed(() => spots.value.filter(s => s.status === 'occupied').length)
 
 const canRelease = computed(() => {
   return selectedSpot.value?.occupied_by === authStore.currentUser?.id
@@ -311,7 +370,7 @@ const bookSpot = async () => {
   if (!selectedSpot.value || !authStore.currentUser) return
   
   if (bookingForm.totalHours < 0.25) {
-    alert('Minimum booking duration is 15 minutes')
+    showNotification('Minimum booking duration is 15 minutes', 'warning')
     return
   }
   
@@ -338,13 +397,13 @@ const bookSpot = async () => {
       await loadSpots()
       selectedSpot.value = null
       resetForm()
-      alert(`Spot booked successfully for ${formatDuration(bookingForm.totalHours)}!`)
+      showNotification(`Spot booked successfully for ${formatDuration(Math.max(0.25, bookingForm.totalHours))}!`, 'success')
     } else {
-      alert(result.message || 'Failed to book spot')
+      showNotification(result.message || 'Failed to book spot', 'error')
     }
   } catch (error) {
     console.error('Error booking spot:', error)
-    alert('Error booking spot')
+    showNotification('Error booking spot', 'error')
   } finally {
     booking.value = false
   }
@@ -375,16 +434,16 @@ const releaseSpot = async () => {
       if (result.success) {
         await loadSpots()
         selectedSpot.value = null
-        alert('Spot released successfully!')
+        showNotification('Spot released successfully!', 'success')
       } else {
-        alert(result.message || 'Failed to release spot')
+        showNotification(result.message || 'Failed to release spot', 'error')
       }
     } else {
-      alert('No active booking found for this spot')
+      showNotification('No active booking found for this spot', 'warning')
     }
   } catch (error) {
     console.error('Error releasing spot:', error)
-    alert('Error releasing spot')
+    showNotification('Error releasing spot', 'error')
   } finally {
     releasing.value = false
   }
@@ -400,15 +459,6 @@ const resetForm = () => {
   bookingForm.hours = 1
   bookingForm.minutes = 0
   bookingForm.totalHours = 1
-}
-
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'available': return 'success'
-    case 'occupied': return 'danger'
-    case 'reserved': return 'warning'
-    default: return 'secondary'
-  }
 }
 
 const formatDateTime = (dateString: string) => {
@@ -447,168 +497,551 @@ const getTimeRemainingColor = (releaseTime: string) => {
   if (minutes <= 30) return 'text-warning'
   return 'text-success'
 }
+
+const showNotification = (message: string, type: 'success' | 'error' | 'warning' | 'info') => {
+  // Enhanced notification system - will be replaced with toast notifications
+  alert(message)
+}
 </script>
 
 <style scoped>
-.parking-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
-  gap: 8px;
-  max-width: 600px;
+.parking-grid-container {
+  max-width: 1200px;
   margin: 0 auto;
+  padding: 1rem;
 }
 
-.parking-spot {
-  width: 50px;
-  height: 50px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+/* Grid Header */
+.grid-header {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid #dee2e6;
+}
+
+.grid-title {
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 0.25rem;
+}
+
+.grid-subtitle {
+  margin-bottom: 0;
+  font-size: 0.9rem;
+}
+
+.grid-stats {
   display: flex;
   align-items: center;
+  gap: 1rem;
+  background: white;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-number {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.stat-divider {
+  width: 1px;
+  height: 30px;
+  background: #dee2e6;
+}
+
+/* Legend */
+.legend-section {
+  background: white;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.legend-items {
+  display: flex;
+  gap: 2rem;
   justify-content: center;
-  font-size: 12px;
-  font-weight: 600;
-  color: white;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+.legend-spot {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
   border: 2px solid transparent;
 }
 
-.parking-spot.available {
-  background-color: var(--bs-success);
+.legend-spot.available {
+  background: #28a745;
 }
 
-.parking-spot.occupied {
-  background-color: var(--bs-danger);
+.legend-spot.occupied {
+  background: #dc3545;
 }
 
-.parking-spot.reserved {
-  background-color: var(--bs-warning);
-  color: var(--bs-dark);
+.legend-spot.reserved {
+  background: #ffc107;
 }
 
-.parking-spot:hover {
-  transform: scale(1.1);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  border-color: var(--bs-primary);
+.legend-spot.selected {
+  background: #007bff;
+  border-color: #0056b3;
 }
 
-.parking-grid-container {
+/* Parking Grid */
+.parking-grid-wrapper {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  margin-bottom: 2rem;
+}
+
+.parking-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  gap: 12px;
   max-width: 800px;
   margin: 0 auto;
 }
 
-.booking-form {
+.parking-spot {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: white;
+  border: 3px solid transparent;
   position: relative;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.parking-spot.available {
+  background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+.parking-spot.occupied {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+}
+
+.parking-spot.reserved {
+  background: linear-gradient(135deg, #ffc107, #e0a800);
+  color: #212529;
+}
+
+.parking-spot.selected {
+  border-color: #007bff;
+  transform: scale(1.1);
+  box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
   z-index: 10;
+}
+
+.parking-spot:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+}
+
+.spot-number {
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.spot-timer {
+  font-size: 0.6rem;
+  margin-top: 2px;
+}
+
+/* Spot Details Panel */
+.spot-details-panel {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+.panel-header {
+  background: linear-gradient(135deg, #495057, #6c757d);
+  color: white;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: between;
+  align-items: center;
+}
+
+.panel-title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.panel-status .badge {
+  font-size: 0.75rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+}
+
+.status-available {
+  background: #28a745;
+}
+
+.status-occupied {
+  background: #dc3545;
+}
+
+.status-reserved {
+  background: #ffc107;
+  color: #212529;
+}
+
+/* Booking Section */
+.booking-section {
+  padding: 2rem;
+}
+
+.form-header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.form-header h6 {
+  color: #495057;
+  font-weight: 600;
+  margin: 0;
 }
 
 .booking-input {
-  background: #f8f9fa !important;
-  border: 2px solid #e9ecef !important;
-  border-radius: 8px !important;
-  padding: 0.5rem 0.75rem !important;
-  font-size: 0.9rem !important;
-  transition: all 0.3s ease !important;
-  cursor: text !important;
-  pointer-events: auto !important;
-  position: relative !important;
-  z-index: 11 !important;
+  border: 2px solid #e9ecef;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
 }
 
 .booking-input:focus {
-  background: #ffffff !important;
-  border-color: #0d6efd !important;
-  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25) !important;
-  outline: none !important;
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-.booking-submit-btn {
-  cursor: pointer !important;
-  pointer-events: auto !important;
-  user-select: none !important;
-  position: relative !important;
-  z-index: 15 !important;
-  background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%) !important;
-  border: none !important;
-  color: white !important;
-  font-weight: 600 !important;
-  padding: 0.75rem 1.5rem !important;
-  border-radius: 8px !important;
-  transition: all 0.3s ease !important;
-}
-
-.booking-submit-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #0b5ed7 0%, #0a58ca 100%) !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 6px 20px rgba(13, 110, 253, 0.4) !important;
-}
-
-.booking-submit-btn:disabled {
-  opacity: 0.6 !important;
-  cursor: not-allowed !important;
-  pointer-events: none !important;
-}
-
-.time-input-container {
+.duration-controls {
   position: relative;
-  z-index: 10;
+}
+
+.quick-duration-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.quick-duration-buttons .btn {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.8rem;
+  border-radius: 20px;
+}
+
+.duration-display {
+  text-align: center;
 }
 
 .cost-summary {
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
-  border: 2px solid #dee2e6 !important;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 2px solid #dee2e6;
+}
+
+.cost-header h6 {
+  color: #495057;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.cost-details {
+  space-y: 0.5rem;
+}
+
+.cost-row {
+  display: flex;
+  justify-content: between;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.cost-row.total-row {
+  border-top: 2px solid #dee2e6;
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  font-weight: 600;
+}
+
+.cost-value {
+  font-weight: 500;
+  color: #495057;
+}
+
+.total-cost {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #28a745;
+}
+
+.booking-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.booking-submit-btn {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  border: none;
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.booking-submit-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #218838, #1e7e34);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+.booking-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Occupied Details */
+.occupied-details {
+  padding: 2rem;
 }
 
 .occupied-info {
-  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%) !important;
-  border: 2px solid #ffc107 !important;
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
-.user-details-card {
-  background: linear-gradient(135deg, #e7f3ff 0%, #cce7ff 100%) !important;
-  border: 2px solid #0dcaf0 !important;
-  animation: fadeIn 0.3s ease;
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+.info-item label {
+  font-size: 0.8rem;
+  color: #6c757d;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.btn-group-sm .btn {
-  padding: 0.25rem 0.5rem !important;
-  font-size: 0.75rem !important;
-  cursor: pointer !important;
-  pointer-events: auto !important;
-  user-select: none !important;
-  position: relative !important;
-  z-index: 12 !important;
+.info-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-top: 0.25rem;
 }
 
-.input-group-text {
-  background: #e9ecef !important;
-  border: 2px solid #e9ecef !important;
-  color: #6c757d !important;
-  font-size: 0.8rem !important;
-  font-weight: 600 !important;
+.user-details-section,
+.booking-details-section {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  border: 1px solid #2196f3;
 }
 
-/* Responsive adjustments */
+.section-header h6 {
+  color: #1976d2;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.user-info-grid,
+.booking-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.user-info-item,
+.booking-info-item {
+  background: rgba(255,255,255,0.7);
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.user-info-item label,
+.booking-info-item label {
+  font-size: 0.75rem;
+  color: #1976d2;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.user-info-value,
+.booking-info-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-top: 0.25rem;
+}
+
+.cost-highlight {
+  color: #28a745 !important;
+  font-size: 1.1rem !important;
+}
+
+.release-section {
+  text-align: center;
+  padding-top: 1rem;
+  border-top: 2px solid #dee2e6;
+}
+
+.release-btn {
+  background: linear-gradient(135deg, #ffc107, #e0a800);
+  border: none;
+  color: #212529;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.release-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #e0a800, #d39e00);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-  .parking-spot {
-    width: 40px;
-    height: 40px;
-    font-size: 10px;
+  .parking-grid-container {
+    padding: 0.5rem;
+  }
+  
+  .grid-header {
+    padding: 1rem;
+  }
+  
+  .grid-stats {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+  
+  .stat-divider {
+    width: 30px;
+    height: 1px;
+  }
+  
+  .legend-items {
+    gap: 1rem;
   }
   
   .parking-grid {
-    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    gap: 8px;
+  }
+  
+  .parking-spot {
+    width: 50px;
+    height: 50px;
+    font-size: 0.8rem;
+  }
+  
+  .spot-details-panel {
+    margin-top: 1rem;
+  }
+  
+  .booking-section,
+  .occupied-details {
+    padding: 1rem;
+  }
+  
+  .info-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .user-info-grid,
+  .booking-info-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .booking-actions {
+    flex-direction: column;
+  }
+  
+  .quick-duration-buttons {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .grid-header {
+    text-align: center;
+  }
+  
+  .grid-stats {
+    flex-direction: row;
+    justify-content: center;
+  }
+  
+  .parking-grid {
+    grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
     gap: 6px;
   }
   
-  .btn-group-sm .btn {
-    padding: 0.2rem 0.4rem !important;
-    font-size: 0.7rem !important;
+  .parking-spot {
+    width: 45px;
+    height: 45px;
+    font-size: 0.7rem;
+  }
+  
+  .cost-summary {
+    padding: 1rem;
+  }
+  
+  .booking-submit-btn,
+  .release-btn {
+    width: 100%;
   }
 }
 </style>
