@@ -38,5 +38,5 @@ import type { ParkingLot } from '../../stores/parking'
 </script>
 
 <style scoped>
-/* Style content */
+/* All style content */
 </style>
