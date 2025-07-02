@@ -14,28 +14,35 @@ import uuid
 
 app = Flask(__name__)
 
-# IST timezone configuration
+# IST timezone configuration - CRITICAL FIX
 IST = pytz.timezone('Asia/Kolkata')
 
 def get_ist_now():
-    """Get current time in IST"""
-    return datetime.now(IST)
+    """Get current time in IST - ALWAYS returns IST time"""
+    utc_now = datetime.utcnow()
+    utc_aware = pytz.UTC.localize(utc_now)
+    ist_time = utc_aware.astimezone(IST)
+    return ist_time
 
-def convert_to_ist(dt):
-    """Convert datetime to IST"""
-    if dt is None:
-        return None
-    if dt.tzinfo is None:
-        # If naive datetime, assume it's UTC and convert to IST
-        dt = pytz.UTC.localize(dt)
-    return dt.astimezone(IST)
+def get_ist_naive():
+    """Get current IST time as naive datetime for database storage"""
+    ist_time = get_ist_now()
+    return ist_time.replace(tzinfo=None)
 
 def format_ist_datetime(dt):
     """Format datetime in IST for JSON serialization"""
     if dt is None:
         return None
-    ist_dt = convert_to_ist(dt)
-    return ist_dt.strftime('%Y-%m-%d %H:%M:%S IST')
+    
+    # If it's a naive datetime, assume it's already in IST
+    if dt.tzinfo is None:
+        # Create IST-aware datetime
+        ist_aware = IST.localize(dt)
+    else:
+        # Convert to IST if it has timezone info
+        ist_aware = dt.astimezone(IST)
+    
+    return ist_aware.strftime('%d/%m/%Y, %I:%M:%S %p IST')
 
 # Configuration
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key-here-change-in-production')
@@ -107,7 +114,7 @@ class User(db.Model, UserMixin):
     pin_code = db.Column(db.String(10))
     active = db.Column(db.Boolean(), default=True)
     fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
-    created_at = db.Column(db.DateTime, default=lambda: get_ist_now().replace(tzinfo=None))
+    created_at = db.Column(db.DateTime, default=get_ist_naive)
     roles = db.relationship('Role', secondary=roles_users, backref=db.backref('users', lazy='dynamic'))
 
 class ParkingLot(db.Model):
@@ -118,7 +125,7 @@ class ParkingLot(db.Model):
     total_spots = db.Column(db.Integer, nullable=False)
     available_spots = db.Column(db.Integer, nullable=False)
     price_per_hour = db.Column(db.Float, nullable=False)
-    created_at = db.Column(db.DateTime, default=lambda: get_ist_now().replace(tzinfo=None))
+    created_at = db.Column(db.DateTime, default=get_ist_naive)
     
     spots = db.relationship('ParkingSpot', backref='lot', lazy=True, cascade='all, delete-orphan')
 
@@ -138,7 +145,7 @@ class Booking(db.Model):
     lot_id = db.Column(db.Integer, db.ForeignKey('parking_lot.id'), nullable=False)
     spot_id = db.Column(db.Integer, db.ForeignKey('parking_spot.id'), nullable=False)
     vehicle_number = db.Column(db.String(20), nullable=False)
-    start_time = db.Column(db.DateTime, default=lambda: get_ist_now().replace(tzinfo=None))
+    start_time = db.Column(db.DateTime, default=get_ist_naive)
     end_time = db.Column(db.DateTime)
     duration_hours = db.Column(db.Float, nullable=False)  # Store actual duration
     total_cost = db.Column(db.Float, nullable=False)
@@ -157,7 +164,7 @@ if celery:
     @celery.task
     def cleanup_expired_bookings():
         """Clean up expired parking bookings"""
-        current_time = get_ist_now().replace(tzinfo=None)
+        current_time = get_ist_naive()
         expired_spots = ParkingSpot.query.filter(
             ParkingSpot.status == 'occupied',
             ParkingSpot.release_time < current_time
@@ -227,7 +234,8 @@ def health_check():
         'status': 'healthy', 
         'timestamp': current_time.isoformat(),
         'timezone': 'Asia/Kolkata (IST)',
-        'current_ist_time': current_time.strftime('%Y-%m-%d %H:%M:%S IST'),
+        'current_ist_time': current_time.strftime('%d/%m/%Y, %I:%M:%S %p IST'),
+        'server_time': datetime.now().isoformat(),
         'environment': os.environ.get('RAILWAY_ENVIRONMENT', 'development')
     })
 
@@ -299,7 +307,7 @@ def register():
         fs_uniquifier = str(uuid.uuid4())
         
         # Create new user with IST timestamp
-        current_time = get_ist_now().replace(tzinfo=None)
+        current_time = get_ist_naive()
         user = User(
             email=data['email'],
             password=generate_password_hash(data['password']),
@@ -359,7 +367,7 @@ def get_parking_lots():
 def create_parking_lot():
     data = request.get_json()
     
-    current_time = get_ist_now().replace(tzinfo=None)
+    current_time = get_ist_naive()
     lot = ParkingLot(
         name=data['name'],
         location=data['location'],
@@ -495,7 +503,7 @@ def create_booking():
     hours = float(data.get('hours', 1))
     total_cost = lot.price_per_hour * hours
     
-    current_time = get_ist_now().replace(tzinfo=None)
+    current_time = get_ist_naive()
     
     # Create booking with actual duration
     booking = Booking(
@@ -539,7 +547,7 @@ def release_booking(booking_id):
     if booking.status != 'active':
         return jsonify({'success': False, 'message': 'Booking already completed'}), 400
     
-    current_time = get_ist_now().replace(tzinfo=None)
+    current_time = get_ist_naive()
     
     # Update booking
     booking.status = 'completed'
@@ -633,7 +641,7 @@ def get_analytics():
     
     # Revenue by month (last 6 months) - using IST
     revenue_data = []
-    current_time = get_ist_now().replace(tzinfo=None)
+    current_time = get_ist_naive()
     for i in range(6):
         month_start = current_time.replace(day=1) - timedelta(days=30*i)
         month_end = month_start + timedelta(days=30)
@@ -683,7 +691,7 @@ def create_tables():
         # Create sample data if database is empty
         if ParkingLot.query.count() == 0:
             # Bangalore-specific parking lots
-            current_time = get_ist_now().replace(tzinfo=None)
+            current_time = get_ist_naive()
             lots_data = [
                 {
                     'name': 'UB City Mall Parking',

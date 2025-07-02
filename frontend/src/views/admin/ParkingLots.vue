@@ -353,7 +353,7 @@
     </div>
 
     <!-- Enhanced Parking Grid Modal -->
-    <div v-if="selectedLot" class="modal fade show d-block" style="background: rgba(0,0,0,0.5);">
+    <div v-if="selectedLot" class="modal fade show d-block" style="background: rgba(0,0,0,0.5);" ref="gridModal">
       <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content enhanced-modal">
           <div class="modal-header enhanced-modal-header">
@@ -372,7 +372,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, reactive, onMounted } from 'vue'
+import { ref, computed, reactive, onMounted, nextTick } from 'vue'
 import { useParkingStore } from '../../stores/parking'
 import ParkingGrid from '../../components/ParkingGrid.vue'
 import type { ParkingLot } from '../../stores/parking'
@@ -386,6 +386,7 @@ const showAddModal = ref(false)
 const editingLot = ref<ParkingLot | null>(null)
 const selectedLot = ref<ParkingLot | null>(null)
 const saving = ref(false)
+const gridModal = ref<HTMLElement>()
 
 const lotForm = reactive({
   name: '',
@@ -470,8 +471,21 @@ const deleteLot = async (id: string) => {
   }
 }
 
-const viewSpots = (lot: ParkingLot) => {
+const viewSpots = async (lot: ParkingLot) => {
   selectedLot.value = lot
+  
+  // Wait for modal to render, then scroll to it
+  await nextTick()
+  
+  // Smooth scroll to the modal
+  setTimeout(() => {
+    if (gridModal.value) {
+      gridModal.value.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center' 
+      })
+    }
+  }, 100)
 }
 
 const viewAnalytics = (lot: ParkingLot) => {
@@ -735,7 +749,7 @@ const showNotification = (message: string, type: 'success' | 'error' | 'info') =
   color: white;
 }
 
-/* Parking Lot Cards */
+/* Parking Lot Cards - FIXED HEIGHT */
 .lots-grid-section {
   margin-top: 2rem;
 }
@@ -748,6 +762,10 @@ const showNotification = (message: string, type: 'success' | 'error' | 'info') =
   transition: all 0.3s ease;
   overflow: hidden;
   position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 500px; /* Fixed minimum height */
 }
 
 .parking-lot-card:hover {
@@ -756,7 +774,9 @@ const showNotification = (message: string, type: 'success' | 'error' | 'info') =
 }
 
 .card-header-custom {
-  padding: 1.5rem 1.5rem 0;
+  padding: 1.5rem;
+  position: relative;
+  flex-shrink: 0;
 }
 
 .lot-title {
@@ -774,13 +794,17 @@ const showNotification = (message: string, type: 'success' | 'error' | 'info') =
 }
 
 .card-body-custom {
-  padding: 1rem 1.5rem 1.5rem;
+  padding: 0 1.5rem 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .lot-address {
   color: #6c757d;
   font-size: 0.85rem;
   line-height: 1.4;
+  flex-shrink: 0;
 }
 
 .pricing-info {
@@ -789,6 +813,7 @@ const showNotification = (message: string, type: 'success' | 'error' | 'info') =
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   border-radius: 12px;
   margin-bottom: 1rem;
+  flex-shrink: 0;
 }
 
 .price-tag {
@@ -813,6 +838,7 @@ const showNotification = (message: string, type: 'success' | 'error' | 'info') =
   background: #f8f9fa;
   border-radius: 12px;
   padding: 1rem;
+  flex-shrink: 0;
 }
 
 .occupancy-header {
@@ -891,7 +917,8 @@ const showNotification = (message: string, type: 'success' | 'error' | 'info') =
 .action-buttons {
   display: flex;
   gap: 0.75rem;
-  margin-top: 1rem;
+  margin-top: auto;
+  flex-shrink: 0;
 }
 
 .btn-action {
@@ -1067,6 +1094,7 @@ const showNotification = (message: string, type: 'success' | 'error' | 'info') =
   
   .parking-lot-card {
     margin-bottom: 1rem;
+    min-height: 450px;
   }
   
   .action-buttons {
@@ -1099,6 +1127,10 @@ const showNotification = (message: string, type: 'success' | 'error' | 'info') =
   
   .form-section {
     padding: 1rem;
+  }
+  
+  .parking-lot-card {
+    min-height: 400px;
   }
 }
 </style>

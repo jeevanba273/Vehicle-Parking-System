@@ -4,7 +4,7 @@
       <div class="d-flex justify-content-between align-items-center">
         <div>
           <h4 class="grid-title mb-1">{{ lot.name }} - Parking Grid</h4>
-          <p class="grid-subtitle text-muted">Real-time spot management and booking (IST: {{ getCurrentISTTime() }})</p>
+          <p class="grid-subtitle text-muted">Real-time spot management and booking (Current IST: {{ getCurrentISTTime() }})</p>
         </div>
         <div class="grid-stats">
           <div class="stat-item">
@@ -473,44 +473,25 @@ const getCurrentISTTime = () => {
 }
 
 const parseISTDateTime = (dateString: string) => {
-  if (!dateString || dateString === 'N/A') return 'N/A'
+  if (!dateString || dateString === 'N/A' || dateString === 'None') return 'N/A'
   
-  // If the string already contains 'IST', just format it nicely
-  if (dateString.includes('IST')) {
-    try {
-      // Parse the IST string format: "2025-01-03 03:18:34 IST"
-      const parts = dateString.replace(' IST', '').split(' ')
-      if (parts.length === 2) {
-        const [datePart, timePart] = parts
-        const [year, month, day] = datePart.split('-')
-        const [hour, minute, second] = timePart.split(':')
-        
-        const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), 
-                             parseInt(hour), parseInt(minute), parseInt(second))
-        
-        return date.toLocaleString('en-IN', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          hour12: true
-        }) + ' IST'
-      }
-    } catch (error) {
-      console.error('Error parsing IST date:', error)
-    }
-  }
-  
-  // Fallback: try to parse as regular date and convert to IST
   try {
+    // If the string already contains 'IST', just return it as is
+    if (dateString.includes('IST')) {
+      return dateString
+    }
+    
+    // Try to parse as regular date and convert to IST format
     const date = new Date(dateString)
+    if (isNaN(date.getTime())) {
+      return 'Invalid Date'
+    }
+    
     return date.toLocaleString('en-IN', {
       timeZone: 'Asia/Kolkata',
-      year: 'numeric',
-      month: '2-digit',
       day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
@@ -523,30 +504,29 @@ const parseISTDateTime = (dateString: string) => {
 }
 
 const getTimeRemaining = (releaseTime: string) => {
-  if (!releaseTime || releaseTime === 'N/A') return 'N/A'
+  if (!releaseTime || releaseTime === 'N/A' || releaseTime === 'None') return 'N/A'
   
   try {
     let releaseDate: Date
     
-    // Parse IST format: "2025-01-03 06:03:34 IST"
+    // Parse IST format from backend
     if (releaseTime.includes('IST')) {
-      const parts = releaseTime.replace(' IST', '').split(' ')
-      if (parts.length === 2) {
-        const [datePart, timePart] = parts
-        const [year, month, day] = datePart.split('-')
-        const [hour, minute, second] = timePart.split(':')
-        
-        releaseDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), 
-                              parseInt(hour), parseInt(minute), parseInt(second))
-      } else {
-        releaseDate = new Date(releaseTime)
-      }
+      // Remove 'IST' and parse the date
+      const cleanTime = releaseTime.replace(' IST', '')
+      releaseDate = new Date(cleanTime)
     } else {
       releaseDate = new Date(releaseTime)
     }
     
+    if (isNaN(releaseDate.getTime())) {
+      return 'Invalid Date'
+    }
+    
+    // Get current IST time
     const now = new Date()
-    const diff = releaseDate.getTime() - now.getTime()
+    const istNow = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }))
+    
+    const diff = releaseDate.getTime() - istNow.getTime()
     
     if (diff <= 0) return 'Expired'
     
@@ -565,29 +545,26 @@ const getTimeRemaining = (releaseTime: string) => {
 }
 
 const getTimeRemainingColor = (releaseTime: string) => {
-  if (!releaseTime || releaseTime === 'N/A') return 'text-muted'
+  if (!releaseTime || releaseTime === 'N/A' || releaseTime === 'None') return 'text-muted'
   
   try {
     let releaseDate: Date
     
     if (releaseTime.includes('IST')) {
-      const parts = releaseTime.replace(' IST', '').split(' ')
-      if (parts.length === 2) {
-        const [datePart, timePart] = parts
-        const [year, month, day] = datePart.split('-')
-        const [hour, minute, second] = timePart.split(':')
-        
-        releaseDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), 
-                              parseInt(hour), parseInt(minute), parseInt(second))
-      } else {
-        releaseDate = new Date(releaseTime)
-      }
+      const cleanTime = releaseTime.replace(' IST', '')
+      releaseDate = new Date(cleanTime)
     } else {
       releaseDate = new Date(releaseTime)
     }
     
+    if (isNaN(releaseDate.getTime())) {
+      return 'text-muted'
+    }
+    
     const now = new Date()
-    const diff = releaseDate.getTime() - now.getTime()
+    const istNow = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }))
+    
+    const diff = releaseDate.getTime() - istNow.getTime()
     const minutes = diff / (1000 * 60)
     
     if (minutes <= 0) return 'text-danger'
