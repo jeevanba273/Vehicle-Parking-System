@@ -7,6 +7,8 @@ import UserDashboard from '../views/UserDashboard.vue'
 import ParkingLots from '../views/admin/ParkingLots.vue'
 import RegisteredUsers from '../views/admin/RegisteredUsers.vue'
 import Analytics from '../views/admin/Analytics.vue'
+import AdminProfile from '../views/admin/AdminProfile.vue'
+import AdminSettings from '../views/admin/AdminSettings.vue'
 import BookingHistory from '../views/user/BookingHistory.vue'
 import BookSpot from '../views/user/BookSpot.vue'
 import ProfilePage from '../views/user/ProfilePage.vue'
@@ -53,6 +55,16 @@ const router = createRouter({
           path: 'analytics',
           name: 'Analytics',
           component: Analytics
+        },
+        {
+          path: 'profile',
+          name: 'AdminProfile',
+          component: AdminProfile
+        },
+        {
+          path: 'settings',
+          name: 'AdminSettings',
+          component: AdminSettings
         }
       ]
     },

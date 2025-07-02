@@ -509,24 +509,38 @@ const getTimeRemaining = (releaseTime: string) => {
   try {
     let releaseDate: Date
     
-    // Parse IST format from backend
+    // Parse IST format from backend - CRITICAL FIX
     if (releaseTime.includes('IST')) {
-      // Remove 'IST' and parse the date
+      // Parse the IST formatted string properly
       const cleanTime = releaseTime.replace(' IST', '')
-      releaseDate = new Date(cleanTime)
+      // Convert DD/MM/YYYY, HH:MM:SS AM/PM format to proper date
+      const parts = cleanTime.split(', ')
+      if (parts.length === 2) {
+        const datePart = parts[0] // DD/MM/YYYY
+        const timePart = parts[1] // HH:MM:SS AM/PM
+        
+        const [day, month, year] = datePart.split('/')
+        const dateStr = `${month}/${day}/${year} ${timePart}`
+        releaseDate = new Date(dateStr)
+      } else {
+        releaseDate = new Date(cleanTime)
+      }
     } else {
       releaseDate = new Date(releaseTime)
     }
     
     if (isNaN(releaseDate.getTime())) {
+      console.error('Invalid release date:', releaseTime)
       return 'Invalid Date'
     }
     
-    // Get current IST time
+    // Get current IST time properly
     const now = new Date()
-    const istNow = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }))
+    const istOffset = 5.5 * 60 * 60 * 1000 // IST is UTC+5:30
+    const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000)
+    const istTime = new Date(utcTime + istOffset)
     
-    const diff = releaseDate.getTime() - istNow.getTime()
+    const diff = releaseDate.getTime() - istTime.getTime()
     
     if (diff <= 0) return 'Expired'
     
@@ -539,7 +553,7 @@ const getTimeRemaining = (releaseTime: string) => {
       return `${minutes}m`
     }
   } catch (error) {
-    console.error('Error calculating time remaining:', error)
+    console.error('Error calculating time remaining:', error, 'for time:', releaseTime)
     return 'Error'
   }
 }
@@ -552,7 +566,16 @@ const getTimeRemainingColor = (releaseTime: string) => {
     
     if (releaseTime.includes('IST')) {
       const cleanTime = releaseTime.replace(' IST', '')
-      releaseDate = new Date(cleanTime)
+      const parts = cleanTime.split(', ')
+      if (parts.length === 2) {
+        const datePart = parts[0]
+        const timePart = parts[1]
+        const [day, month, year] = datePart.split('/')
+        const dateStr = `${month}/${day}/${year} ${timePart}`
+        releaseDate = new Date(dateStr)
+      } else {
+        releaseDate = new Date(cleanTime)
+      }
     } else {
       releaseDate = new Date(releaseTime)
     }
@@ -562,9 +585,11 @@ const getTimeRemainingColor = (releaseTime: string) => {
     }
     
     const now = new Date()
-    const istNow = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }))
+    const istOffset = 5.5 * 60 * 60 * 1000
+    const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000)
+    const istTime = new Date(utcTime + istOffset)
     
-    const diff = releaseDate.getTime() - istNow.getTime()
+    const diff = releaseDate.getTime() - istTime.getTime()
     const minutes = diff / (1000 * 60)
     
     if (minutes <= 0) return 'text-danger'

@@ -64,14 +64,14 @@
                 </li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
-                  <a class="dropdown-item" href="#" @click.prevent>
+                  <router-link to="/admin/profile" class="dropdown-item">
                     <i class="bi bi-person me-2"></i>Profile
-                  </a>
+                  </router-link>
                 </li>
                 <li>
-                  <a class="dropdown-item" href="#" @click.prevent>
+                  <router-link to="/admin/settings" class="dropdown-item">
                     <i class="bi bi-gear me-2"></i>Settings
-                  </a>
+                  </router-link>
                 </li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
@@ -137,16 +137,20 @@ const logout = () => {
   border-radius: 8px;
   margin: 0 4px;
   position: relative;
+  text-decoration: none !important;
+  color: rgba(255,255,255,0.8) !important;
 }
 
 .nav-link:hover {
   background-color: rgba(255, 255, 255, 0.1);
   transform: translateY(-1px);
+  color: white !important;
 }
 
 .nav-link.active {
   background-color: rgba(255, 255, 255, 0.2);
   font-weight: 600;
+  color: white !important;
 }
 
 .navbar {
@@ -205,11 +209,14 @@ const logout = () => {
   pointer-events: auto !important;
   position: relative !important;
   z-index: 1 !important;
+  text-decoration: none !important;
+  color: #495057 !important;
 }
 
 .dropdown-item:hover {
   background-color: #f8f9fa !important;
   transform: translateX(5px) !important;
+  color: #495057 !important;
 }
 
 .logout-item:hover {
