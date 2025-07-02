@@ -4,7 +4,7 @@
       <div class="d-flex justify-content-between align-items-center">
         <div>
           <h4 class="grid-title mb-1">{{ lot.name }} - Parking Grid</h4>
-          <p class="grid-subtitle text-muted">Real-time spot management and booking (IST)</p>
+          <p class="grid-subtitle text-muted">Real-time spot management and booking (IST: {{ getCurrentISTTime() }})</p>
         </div>
         <div class="grid-stats">
           <div class="stat-item">
@@ -459,6 +459,17 @@ const resetForm = () => {
   bookingForm.hours = 1
   bookingForm.minutes = 0
   bookingForm.totalHours = 1
+}
+
+const getCurrentISTTime = () => {
+  const now = new Date()
+  return now.toLocaleTimeString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+  })
 }
 
 const formatDateTime = (dateString: string) => {

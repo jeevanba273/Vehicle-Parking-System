@@ -57,14 +57,14 @@
                 </li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
-                  <a class="dropdown-item" href="#" @click.prevent>
+                  <router-link to="/user/profile" class="dropdown-item">
                     <i class="bi bi-person me-2"></i>Profile
-                  </a>
+                  </router-link>
                 </li>
                 <li>
-                  <a class="dropdown-item" href="#" @click.prevent>
+                  <router-link to="/user/settings" class="dropdown-item">
                     <i class="bi bi-gear me-2"></i>Settings
-                  </a>
+                  </router-link>
                 </li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
@@ -198,11 +198,14 @@ const logout = () => {
   pointer-events: auto !important;
   position: relative !important;
   z-index: 1 !important;
+  text-decoration: none !important;
+  color: #495057 !important;
 }
 
 .dropdown-item:hover {
   background-color: #f8f9fa !important;
   transform: translateX(5px) !important;
+  color: #495057 !important;
 }
 
 .logout-item:hover {

@@ -9,6 +9,8 @@ import RegisteredUsers from '../views/admin/RegisteredUsers.vue'
 import Analytics from '../views/admin/Analytics.vue'
 import BookingHistory from '../views/user/BookingHistory.vue'
 import BookSpot from '../views/user/BookSpot.vue'
+import ProfilePage from '../views/user/ProfilePage.vue'
+import SettingsPage from '../views/user/SettingsPage.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -73,6 +75,16 @@ const router = createRouter({
           path: 'history',
           name: 'BookingHistory',
           component: BookingHistory
+        },
+        {
+          path: 'profile',
+          name: 'Profile',
+          component: ProfilePage
+        },
+        {
+          path: 'settings',
+          name: 'Settings',
+          component: SettingsPage
         }
       ]
     }

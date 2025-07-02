@@ -241,7 +241,7 @@
     </div>
 
     <!-- Enhanced Parking Grid Modal -->
-    <div v-if="selectedLot" class="modal fade show d-block" style="background: rgba(0,0,0,0.5);">
+    <div v-if="selectedLot" class="modal fade show d-block" style="background: rgba(0,0,0,0.5);" ref="gridModal">
       <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content enhanced-modal">
           <div class="modal-header enhanced-modal-header">
@@ -249,7 +249,7 @@
               <h5 class="modal-title">
                 <i class="bi bi-grid-3x3-gap me-2"></i>{{ selectedLot.name }}
               </h5>
-              <p class="modal-subtitle">Select your preferred parking spot • All times in IST</p>
+              <p class="modal-subtitle">Select your preferred parking spot • All times in IST ({{ getCurrentISTTime() }})</p>
             </div>
             <button @click="selectedLot = null" class="btn-close btn-close-white"></button>
           </div>
@@ -263,7 +263,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import ParkingGrid from '../../components/ParkingGrid.vue'
 import { getApiUrl } from '../../config/api'
 import type { ParkingLot } from '../../stores/parking'
@@ -275,6 +275,7 @@ const priceFilter = ref('')
 const availabilityFilter = ref('')
 const sortBy = ref('name')
 const loading = ref(false)
+const gridModal = ref<HTMLElement>()
 
 const totalAvailableSpots = computed(() => 
   parkingLots.value.reduce((sum, lot) => sum + lot.available_spots, 0)
@@ -350,8 +351,21 @@ const loadParkingLots = async () => {
   }
 }
 
-const viewParkingGrid = (lot: ParkingLot) => {
+const viewParkingGrid = async (lot: ParkingLot) => {
   selectedLot.value = lot
+  
+  // Wait for modal to render, then scroll to it
+  await nextTick()
+  
+  // Smooth scroll to the modal
+  setTimeout(() => {
+    if (gridModal.value) {
+      gridModal.value.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center' 
+      })
+    }
+  }, 100)
 }
 
 const clearFilters = () => {
@@ -359,6 +373,16 @@ const clearFilters = () => {
   priceFilter.value = ''
   availabilityFilter.value = ''
   sortBy.value = 'name'
+}
+
+const getCurrentISTTime = () => {
+  const now = new Date()
+  return now.toLocaleTimeString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  })
 }
 
 const getAvailabilityPercentage = (lot: ParkingLot) => {
@@ -623,7 +647,7 @@ const getPriceRatingText = (lot: ParkingLot) => {
   margin-bottom: 0;
 }
 
-/* Parking Lot Cards */
+/* Parking Lot Cards - FIXED HEIGHT */
 .parking-lot-card {
   background: white;
   border-radius: 20px;
@@ -633,6 +657,9 @@ const getPriceRatingText = (lot: ParkingLot) => {
   overflow: hidden;
   position: relative;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 500px; /* Fixed minimum height */
 }
 
 .parking-lot-card:hover {
@@ -643,6 +670,7 @@ const getPriceRatingText = (lot: ParkingLot) => {
 .card-header-custom {
   padding: 1.5rem;
   position: relative;
+  flex-shrink: 0;
 }
 
 .lot-badge {
@@ -702,6 +730,9 @@ const getPriceRatingText = (lot: ParkingLot) => {
 
 .card-body-custom {
   padding: 0 1.5rem 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Pricing Section */
@@ -710,6 +741,7 @@ const getPriceRatingText = (lot: ParkingLot) => {
   border-radius: 12px;
   padding: 1.5rem;
   text-align: center;
+  flex-shrink: 0;
 }
 
 .price-display {
@@ -765,11 +797,12 @@ const getPriceRatingText = (lot: ParkingLot) => {
   background: #f8f9fa;
   border-radius: 12px;
   padding: 1rem;
+  flex-shrink: 0;
 }
 
 .availability-header {
   display: flex;
-  justify-content: between;
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 0.75rem;
 }
@@ -819,6 +852,7 @@ const getPriceRatingText = (lot: ParkingLot) => {
 /* Features Section */
 .features-section {
   margin-bottom: 1rem;
+  flex-shrink: 0;
 }
 
 .feature-tags {
@@ -842,6 +876,8 @@ const getPriceRatingText = (lot: ParkingLot) => {
 /* Action Section */
 .action-section {
   text-align: center;
+  margin-top: auto;
+  flex-shrink: 0;
 }
 
 .btn-book {
@@ -1006,6 +1042,7 @@ const getPriceRatingText = (lot: ParkingLot) => {
   
   .parking-lot-card {
     margin-bottom: 1rem;
+    min-height: 450px;
   }
   
   .empty-state-actions {
@@ -1052,6 +1089,10 @@ const getPriceRatingText = (lot: ParkingLot) => {
   
   .enhanced-modal-body {
     padding: 1rem;
+  }
+  
+  .parking-lot-card {
+    min-height: 400px;
   }
 }
 </style>
