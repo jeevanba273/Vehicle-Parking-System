@@ -9,9 +9,9 @@
               <div>
                 <h1 class="hero-title">
                   <i class="bi bi-car-front-fill me-3"></i>
-                  Find Your Perfect Parking Spot
+                  Find Your Perfect Parking Spot in Bangalore
                 </h1>
-                <p class="hero-subtitle">Discover available parking spaces in real-time</p>
+                <p class="hero-subtitle">Discover available parking spaces in real-time across Bangalore</p>
               </div>
               <div class="hero-stats">
                 <div class="stat-item">
@@ -34,7 +34,7 @@
                         v-model="searchQuery"
                         type="text"
                         class="form-control search-input"
-                        placeholder="Search parking lots, locations..."
+                        placeholder="Search parking lots, locations in Bangalore..."
                       />
                       <button v-if="searchQuery" @click="searchQuery = ''" class="btn btn-outline-secondary clear-search">
                         <i class="bi bi-x"></i>
@@ -45,9 +45,9 @@
                 <div class="col-md-3">
                   <select v-model="priceFilter" class="form-select filter-select">
                     <option value="">All Prices</option>
-                    <option value="low">Under $5/hour</option>
-                    <option value="medium">$5-$10/hour</option>
-                    <option value="high">Over $10/hour</option>
+                    <option value="low">Under ₹30/hour</option>
+                    <option value="medium">₹30-₹50/hour</option>
+                    <option value="high">Over ₹50/hour</option>
                   </select>
                 </div>
                 <div class="col-md-3">
@@ -73,7 +73,7 @@
                   :class="{ active: priceFilter === 'low' }"
                   @click="priceFilter = priceFilter === 'low' ? '' : 'low'"
                 >
-                  <i class="bi bi-currency-dollar"></i>
+                  <i class="bi bi-currency-rupee"></i>
                   Budget Friendly
                 </button>
                 <button 
@@ -100,7 +100,7 @@
         <!-- Enhanced Parking Lots Grid -->
         <div class="lots-grid-section">
           <div class="section-header mb-4">
-            <h3 class="section-title">Available Parking Lots</h3>
+            <h3 class="section-title">Available Parking Lots in Bangalore</h3>
             <p class="section-subtitle">{{ filteredLots.length }} locations found</p>
           </div>
 
@@ -129,8 +129,8 @@
                   <div class="pricing-section mb-3">
                     <div class="price-display">
                       <div class="price-main">
-                        <span class="currency">$</span>
-                        <span class="amount">{{ lot.price_per_hour.toFixed(2) }}</span>
+                        <span class="currency">₹</span>
+                        <span class="amount">{{ lot.price_per_hour.toFixed(0) }}</span>
                         <span class="period">/hour</span>
                       </div>
                       <div class="price-rating">
@@ -168,17 +168,21 @@
                   
                   <div class="features-section mb-3">
                     <div class="feature-tags">
-                      <span class="feature-tag" v-if="lot.price_per_hour <= 5">
-                        <i class="bi bi-currency-dollar"></i>
+                      <span class="feature-tag" v-if="lot.price_per_hour <= 30">
+                        <i class="bi bi-currency-rupee"></i>
                         Budget
                       </span>
                       <span class="feature-tag" v-if="lot.available_spots > lot.total_spots * 0.5">
                         <i class="bi bi-check-circle"></i>
                         High Availability
                       </span>
-                      <span class="feature-tag" v-if="lot.total_spots >= 50">
+                      <span class="feature-tag" v-if="lot.total_spots >= 100">
                         <i class="bi bi-building"></i>
                         Large Lot
+                      </span>
+                      <span class="feature-tag" v-if="lot.location.includes('Metro')">
+                        <i class="bi bi-train-front"></i>
+                        Metro Access
                       </span>
                     </div>
                   </div>
@@ -196,7 +200,7 @@
                     <div class="quick-info mt-2">
                       <small class="text-muted">
                         <i class="bi bi-clock me-1"></i>
-                        Instant booking • Real-time updates
+                        Instant booking • Real-time updates • IST timezone
                       </small>
                     </div>
                   </div>
@@ -216,10 +220,10 @@
               <div class="empty-state-animation">
                 <i class="bi bi-search"></i>
               </div>
-              <h4 class="empty-state-title">No parking lots found</h4>
+              <h4 class="empty-state-title">No parking lots found in Bangalore</h4>
               <p class="empty-state-text">
                 {{ parkingLots.length === 0 
-                  ? 'No parking lots are currently available' 
+                  ? 'No parking lots are currently available in Bangalore' 
                   : 'Try adjusting your search criteria or filters to find more options' }}
               </p>
               <div class="empty-state-actions">
@@ -245,7 +249,7 @@
               <h5 class="modal-title">
                 <i class="bi bi-grid-3x3-gap me-2"></i>{{ selectedLot.name }}
               </h5>
-              <p class="modal-subtitle">Select your preferred parking spot</p>
+              <p class="modal-subtitle">Select your preferred parking spot • All times in IST</p>
             </div>
             <button @click="selectedLot = null" class="btn-close btn-close-white"></button>
           </div>
@@ -289,13 +293,13 @@ const filteredLots = computed(() => {
     )
   }
 
-  // Price filter
+  // Price filter - Updated for Indian pricing
   if (priceFilter.value) {
     filtered = filtered.filter(lot => {
       switch (priceFilter.value) {
-        case 'low': return lot.price_per_hour < 5
-        case 'medium': return lot.price_per_hour >= 5 && lot.price_per_hour <= 10
-        case 'high': return lot.price_per_hour > 10
+        case 'low': return lot.price_per_hour < 30
+        case 'medium': return lot.price_per_hour >= 30 && lot.price_per_hour <= 50
+        case 'high': return lot.price_per_hour > 50
         default: return true
       }
     })
@@ -405,12 +409,13 @@ const getStatusIcon = (lot: ParkingLot) => {
   return 'bi bi-check-circle-fill'
 }
 
+// Updated price rating for Indian pricing
 const getPriceRating = (lot: ParkingLot) => {
-  if (lot.price_per_hour <= 3) return 5
-  if (lot.price_per_hour <= 5) return 4
-  if (lot.price_per_hour <= 8) return 3
-  if (lot.price_per_hour <= 12) return 2
-  return 1
+  if (lot.price_per_hour <= 20) return 5  // Very affordable
+  if (lot.price_per_hour <= 30) return 4  // Affordable
+  if (lot.price_per_hour <= 40) return 3  // Moderate
+  if (lot.price_per_hour <= 55) return 2  // Expensive
+  return 1  // Very expensive
 }
 
 const getPriceRatingText = (lot: ParkingLot) => {
