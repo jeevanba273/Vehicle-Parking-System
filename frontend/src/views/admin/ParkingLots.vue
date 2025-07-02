@@ -9,9 +9,9 @@
               <div>
                 <h1 class="hero-title">
                   <i class="bi bi-building-gear me-3"></i>
-                  Parking Lots Management
+                  Bangalore Parking Lots Management
                 </h1>
-                <p class="hero-subtitle">Manage your parking infrastructure with advanced controls</p>
+                <p class="hero-subtitle">Manage your parking infrastructure across Bangalore with advanced controls</p>
               </div>
               <button
                 @click="showAddModal = true"
@@ -34,7 +34,7 @@
                         v-model="searchQuery"
                         type="text"
                         class="form-control search-input"
-                        placeholder="Search parking lots, locations, addresses..."
+                        placeholder="Search parking lots, locations in Bangalore..."
                       />
                       <button v-if="searchQuery" @click="searchQuery = ''" class="btn btn-outline-secondary clear-search">
                         <i class="bi bi-x"></i>
@@ -45,9 +45,14 @@
                 <div class="col-md-3">
                   <select v-model="locationFilter" class="form-select filter-select">
                     <option value="">All Locations</option>
-                    <option value="City Center">City Center</option>
-                    <option value="West District">West District</option>
-                    <option value="Financial Center">Financial Center</option>
+                    <option value="UB City">UB City</option>
+                    <option value="Brigade Road">Brigade Road</option>
+                    <option value="Indiranagar">Indiranagar</option>
+                    <option value="Koramangala">Koramangala</option>
+                    <option value="Electronic City">Electronic City</option>
+                    <option value="Whitefield">Whitefield</option>
+                    <option value="Malleshwaram">Malleshwaram</option>
+                    <option value="Jayanagar">Jayanagar</option>
                   </select>
                 </div>
                 <div class="col-md-2">
@@ -157,8 +162,8 @@
                   
                   <div class="pricing-info mb-3">
                     <div class="price-tag">
-                      <i class="bi bi-currency-dollar"></i>
-                      <span class="price">${{ lot.price_per_hour }}</span>
+                      <i class="bi bi-currency-rupee"></i>
+                      <span class="price">₹{{ lot.price_per_hour.toFixed(0) }}</span>
                       <span class="period">/hour</span>
                     </div>
                   </div>
@@ -222,10 +227,10 @@
               <div class="empty-state-icon">
                 <i class="bi bi-building"></i>
               </div>
-              <h4 class="empty-state-title">No parking lots found</h4>
+              <h4 class="empty-state-title">No parking lots found in Bangalore</h4>
               <p class="empty-state-text">
                 {{ parkingStore.parkingLots.length === 0 
-                  ? 'Get started by creating your first parking lot' 
+                  ? 'Get started by creating your first parking lot in Bangalore' 
                   : 'Try adjusting your search criteria or filters' }}
               </p>
               <button v-if="parkingStore.parkingLots.length === 0" @click="showAddModal = true" class="btn btn-primary">
@@ -244,7 +249,7 @@
           <div class="modal-header enhanced-modal-header">
             <h5 class="modal-title">
               <i class="bi bi-building me-2"></i>
-              {{ editingLot ? 'Edit Parking Lot' : 'Create New Parking Lot' }}
+              {{ editingLot ? 'Edit Parking Lot' : 'Create New Parking Lot in Bangalore' }}
             </h5>
             <button @click="closeModal" class="btn-close"></button>
           </div>
@@ -262,29 +267,29 @@
                       type="text"
                       class="form-control enhanced-input"
                       required
-                      placeholder="e.g., Downtown Plaza Parking"
+                      placeholder="e.g., UB City Mall Parking"
                     />
                   </div>
                   
                   <div class="col-md-6">
-                    <label class="form-label">Location/District</label>
+                    <label class="form-label">Location/Area in Bangalore</label>
                     <input
                       v-model="lotForm.location"
                       type="text"
                       class="form-control enhanced-input"
                       required
-                      placeholder="e.g., City Center"
+                      placeholder="e.g., UB City, Vittal Mallya Road"
                     />
                   </div>
                   
                   <div class="col-12">
-                    <label class="form-label">Full Address</label>
+                    <label class="form-label">Full Address in Bangalore</label>
                     <textarea
                       v-model="lotForm.address"
                       class="form-control enhanced-input"
                       rows="3"
                       required
-                      placeholder="Enter complete address with landmarks"
+                      placeholder="Enter complete address with landmarks in Bangalore, Karnataka"
                     ></textarea>
                   </div>
                 </div>
@@ -309,19 +314,20 @@
                   </div>
                   
                   <div class="col-md-6">
-                    <label class="form-label">Hourly Rate (USD)</label>
+                    <label class="form-label">Hourly Rate (₹)</label>
                     <div class="input-group">
-                      <span class="input-group-text">$</span>
+                      <span class="input-group-text">₹</span>
                       <input
                         v-model.number="lotForm.price_per_hour"
                         type="number"
                         class="form-control enhanced-input"
-                        min="0"
-                        step="0.25"
+                        min="10"
+                        max="70"
+                        step="5"
                         required
                       />
                     </div>
-                    <small class="form-text">Market rate: $2-15/hour</small>
+                    <small class="form-text">Bangalore rates: ₹15-₹60/hour (Premium areas: up to ₹70)</small>
                   </div>
                 </div>
               </div>
@@ -385,8 +391,8 @@ const lotForm = reactive({
   name: '',
   location: '',
   address: '',
-  total_spots: 20,
-  price_per_hour: 5
+  total_spots: 50,
+  price_per_hour: 30
 })
 
 const filteredLots = computed(() => {
@@ -402,7 +408,7 @@ const filteredLots = computed(() => {
   }
 
   if (locationFilter.value) {
-    filtered = filtered.filter(lot => lot.location === locationFilter.value)
+    filtered = filtered.filter(lot => lot.location.includes(locationFilter.value))
   }
 
   // Sort
@@ -468,9 +474,9 @@ const viewSpots = (lot: ParkingLot) => {
   selectedLot.value = lot
 }
 
-const viewAnalytics = (_lot: ParkingLot) => {
+const viewAnalytics = (lot: ParkingLot) => {
   // Future feature: Individual lot analytics
-  showNotification(`Analytics for ${_lot.name} - Coming soon!`, 'info')
+  showNotification(`Analytics for ${lot.name} - Coming soon!`, 'info')
 }
 
 const saveLot = async () => {
@@ -509,8 +515,8 @@ const closeModal = () => {
     name: '',
     location: '',
     address: '',
-    total_spots: 20,
-    price_per_hour: 5
+    total_spots: 50,
+    price_per_hour: 30
   })
 }
 
@@ -544,8 +550,9 @@ const getStatusIcon = (lot: ParkingLot) => {
   return 'bi bi-check-circle-fill'
 }
 
-const showNotification = (message: string, _notificationType: 'success' | 'error' | 'info') => {
+const showNotification = (message: string, type: 'success' | 'error' | 'info') => {
   // Enhanced notification system
+  console.log(`${type.toUpperCase()}: ${message}`)
   alert(message) // Temporary - will be replaced with toast notifications
 }
 </script>
