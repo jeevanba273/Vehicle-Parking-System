@@ -508,8 +508,9 @@ const getTimeRemainingColor = (releaseTime: string) => {
   return 'text-success'
 }
 
-const showNotification = (message: string, notificationType: 'success' | 'error' | 'warning' | 'info') => {
+const showNotification = (message: string, type: 'success' | 'error' | 'warning' | 'info') => {
   // Enhanced notification system - will be replaced with toast notifications
+  console.log(`${type.toUpperCase()}: ${message}`)
   alert(message)
 }
 </script>
