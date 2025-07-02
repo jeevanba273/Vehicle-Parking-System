@@ -12,8 +12,8 @@
             <div class="brand-logo">
               <i class="bi bi-car-front-fill"></i>
             </div>
-            <h1 class="brand-title">ParkEase</h1>
-            <p class="brand-subtitle">Smart Parking Management System</p>
+            <h1 class="brand-title">ParkEase Bangalore</h1>
+            <p class="brand-subtitle">Smart Parking Management System for Bangalore</p>
             
             <div class="features-list">
               <div class="feature-item">
@@ -42,7 +42,7 @@
             <!-- Mobile Logo -->
             <div class="mobile-logo d-lg-none">
               <i class="bi bi-car-front-fill"></i>
-              <h2>ParkEase</h2>
+              <h2>ParkEase Bangalore</h2>
             </div>
             
             <div class="login-card">

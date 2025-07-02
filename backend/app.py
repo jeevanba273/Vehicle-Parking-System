@@ -4,6 +4,7 @@ from flask_security import Security, SQLAlchemyUserDatastore, UserMixin, RoleMix
 from flask_cors import CORS
 from flask_migrate import Migrate
 from datetime import datetime, timedelta
+import pytz
 import redis
 from celery import Celery
 import os
@@ -12,6 +13,20 @@ import json
 import uuid
 
 app = Flask(__name__)
+
+# IST timezone configuration
+IST = pytz.timezone('Asia/Kolkata')
+
+def get_ist_now():
+    """Get current time in IST"""
+    return datetime.now(IST)
+
+def convert_to_ist(dt):
+    """Convert datetime to IST"""
+    if dt.tzinfo is None:
+        # If naive datetime, assume it's UTC and convert to IST
+        dt = pytz.UTC.localize(dt)
+    return dt.astimezone(IST)
 
 # Configuration
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key-here-change-in-production')
@@ -83,7 +98,7 @@ class User(db.Model, UserMixin):
     pin_code = db.Column(db.String(10))
     active = db.Column(db.Boolean(), default=True)
     fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=get_ist_now)
     roles = db.relationship('Role', secondary=roles_users, backref=db.backref('users', lazy='dynamic'))
 
 class ParkingLot(db.Model):
@@ -94,7 +109,7 @@ class ParkingLot(db.Model):
     total_spots = db.Column(db.Integer, nullable=False)
     available_spots = db.Column(db.Integer, nullable=False)
     price_per_hour = db.Column(db.Float, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=get_ist_now)
     
     spots = db.relationship('ParkingSpot', backref='lot', lazy=True, cascade='all, delete-orphan')
 
@@ -114,7 +129,7 @@ class Booking(db.Model):
     lot_id = db.Column(db.Integer, db.ForeignKey('parking_lot.id'), nullable=False)
     spot_id = db.Column(db.Integer, db.ForeignKey('parking_spot.id'), nullable=False)
     vehicle_number = db.Column(db.String(20), nullable=False)
-    start_time = db.Column(db.DateTime, default=datetime.utcnow)
+    start_time = db.Column(db.DateTime, default=get_ist_now)
     end_time = db.Column(db.DateTime)
     duration_hours = db.Column(db.Float, nullable=False)  # Store actual duration
     total_cost = db.Column(db.Float, nullable=False)
@@ -133,9 +148,10 @@ if celery:
     @celery.task
     def cleanup_expired_bookings():
         """Clean up expired parking bookings"""
+        current_time = get_ist_now()
         expired_spots = ParkingSpot.query.filter(
             ParkingSpot.status == 'occupied',
-            ParkingSpot.release_time < datetime.utcnow()
+            ParkingSpot.release_time < current_time
         ).all()
         
         for spot in expired_spots:
@@ -157,7 +173,7 @@ if celery:
             ).first()
             if booking:
                 booking.status = 'completed'
-                booking.end_time = datetime.utcnow()
+                booking.end_time = current_time
         
         db.session.commit()
         return f"Cleaned up {len(expired_spots)} expired bookings"
@@ -199,7 +215,8 @@ def index():
 def health_check():
     return jsonify({
         'status': 'healthy', 
-        'timestamp': datetime.utcnow().isoformat(),
+        'timestamp': get_ist_now().isoformat(),
+        'timezone': 'Asia/Kolkata (IST)',
         'environment': os.environ.get('RAILWAY_ENVIRONMENT', 'development')
     })
 
@@ -225,10 +242,10 @@ def login():
                 'id': 'admin',
                 'email': 'admin@parking.com',
                 'fullname': 'Administrator',
-                'address': 'Admin Office',
-                'pin_code': '000000',
+                'address': 'Bangalore Parking Authority, Vidhana Soudha, Bangalore',
+                'pin_code': '560001',
                 'is_admin': True,
-                'created_at': datetime.utcnow().isoformat()
+                'created_at': get_ist_now().isoformat()
             }
             return jsonify({'success': True, 'user': admin_user})
         
@@ -242,7 +259,7 @@ def login():
                 'address': user.address,
                 'pin_code': user.pin_code,
                 'is_admin': is_admin,
-                'created_at': user.created_at.isoformat()
+                'created_at': convert_to_ist(user.created_at).isoformat()
             }
             return jsonify({'success': True, 'user': user_data})
         
@@ -290,7 +307,7 @@ def register():
             'address': user.address,
             'pin_code': user.pin_code,
             'is_admin': False,
-            'created_at': user.created_at.isoformat()
+            'created_at': convert_to_ist(user.created_at).isoformat()
         }
         
         return jsonify({'success': True, 'user': user_data})
@@ -318,7 +335,7 @@ def get_parking_lots():
             'total_spots': lot.total_spots,
             'available_spots': lot.available_spots,
             'price_per_hour': lot.price_per_hour,
-            'created_at': lot.created_at.isoformat()
+            'created_at': convert_to_ist(lot.created_at).isoformat()
         })
     
     # Cache for 5 minutes
@@ -414,8 +431,8 @@ def get_parking_spots(lot_id):
             'status': spot.status,
             'occupied_by': str(spot.occupied_by) if spot.occupied_by else None,
             'vehicle_number': spot.vehicle_number,
-            'booked_at': spot.booked_at.isoformat() if spot.booked_at else None,
-            'release_time': spot.release_time.isoformat() if spot.release_time else None
+            'booked_at': convert_to_ist(spot.booked_at).isoformat() if spot.booked_at else None,
+            'release_time': convert_to_ist(spot.release_time).isoformat() if spot.release_time else None
         }
         
         # Add user details if occupied (for admin view)
@@ -440,7 +457,7 @@ def get_parking_spots(lot_id):
                         'id': str(booking.id),
                         'duration_hours': booking.duration_hours,
                         'total_cost': booking.total_cost,
-                        'start_time': booking.start_time.isoformat()
+                        'start_time': convert_to_ist(booking.start_time).isoformat()
                     }
         
         spots_data.append(spot_data)
@@ -459,9 +476,11 @@ def create_booking():
     if not spot or spot.status != 'available':
         return jsonify({'success': False, 'message': 'Spot not available'}), 400
     
-    # Get the actual hours from the request (this is the fix!)
+    # Get the actual hours from the request
     hours = float(data.get('hours', 1))
     total_cost = lot.price_per_hour * hours
+    
+    current_time = get_ist_now()
     
     # Create booking with actual duration
     booking = Booking(
@@ -471,15 +490,16 @@ def create_booking():
         vehicle_number=data['vehicle_number'],
         duration_hours=hours,  # Store the actual duration
         total_cost=total_cost,
-        status='active'
+        status='active',
+        start_time=current_time
     )
     
     # Update spot
     spot.status = 'occupied'
     spot.occupied_by = data['user_id']
     spot.vehicle_number = data['vehicle_number']
-    spot.booked_at = datetime.utcnow()
-    spot.release_time = datetime.utcnow() + timedelta(hours=hours)  # Use actual hours
+    spot.booked_at = current_time
+    spot.release_time = current_time + timedelta(hours=hours)  # Use actual hours
     
     # Update lot availability
     lot.available_spots = max(0, lot.available_spots - 1)
@@ -504,9 +524,11 @@ def release_booking(booking_id):
     if booking.status != 'active':
         return jsonify({'success': False, 'message': 'Booking already completed'}), 400
     
+    current_time = get_ist_now()
+    
     # Update booking
     booking.status = 'completed'
-    booking.end_time = datetime.utcnow()
+    booking.end_time = current_time
     
     # Update spot
     spot = ParkingSpot.query.get(booking.spot_id)
@@ -546,8 +568,8 @@ def get_user_bookings(user_id):
             'lot_name': lot.name,
             'spot_number': spot.spot_number,
             'vehicle_number': booking.vehicle_number,
-            'start_time': booking.start_time.isoformat(),
-            'end_time': booking.end_time.isoformat() if booking.end_time else None,
+            'start_time': convert_to_ist(booking.start_time).isoformat(),
+            'end_time': convert_to_ist(booking.end_time).isoformat() if booking.end_time else None,
             'duration_hours': booking.duration_hours,
             'total_cost': booking.total_cost,
             'status': booking.status
@@ -570,7 +592,7 @@ def get_users():
             'fullname': user.fullname,
             'address': user.address,
             'pin_code': user.pin_code,
-            'created_at': user.created_at.isoformat(),
+            'created_at': convert_to_ist(user.created_at).isoformat(),
             'bookings_count': bookings_count,
             'active_bookings': active_bookings
         })
@@ -594,10 +616,11 @@ def get_analytics():
     
     occupancy_rate = (occupied_spots / total_spots * 100) if total_spots > 0 else 0
     
-    # Revenue by month (last 6 months)
+    # Revenue by month (last 6 months) - using IST
     revenue_data = []
+    current_time = get_ist_now()
     for i in range(6):
-        month_start = datetime.utcnow().replace(day=1) - timedelta(days=30*i)
+        month_start = current_time.replace(day=1) - timedelta(days=30*i)
         month_end = month_start + timedelta(days=30)
         
         month_revenue = db.session.query(db.func.sum(Booking.total_cost)).filter(
@@ -621,7 +644,9 @@ def get_analytics():
         'total_bookings': total_bookings,
         'active_bookings': active_bookings,
         'total_revenue': round(total_revenue, 2),
-        'revenue_by_month': revenue_data
+        'revenue_by_month': revenue_data,
+        'timezone': 'Asia/Kolkata (IST)',
+        'last_updated': current_time.isoformat()
     }
     
     # Cache for 5 minutes
@@ -642,28 +667,63 @@ def create_tables():
         
         # Create sample data if database is empty
         if ParkingLot.query.count() == 0:
-            # Sample parking lots
+            # Bangalore-specific parking lots
             lots_data = [
                 {
-                    'name': 'Downtown Plaza',
-                    'location': 'City Center',
-                    'address': '123 Main Street, Downtown',
-                    'total_spots': 50,
-                    'price_per_hour': 5.0
+                    'name': 'UB City Mall Parking',
+                    'location': 'UB City, Vittal Mallya Road',
+                    'address': 'UB City Mall, 24, Vittal Mallya Road, KG Halli, Shanthala Nagar, Ashok Nagar, Bengaluru, Karnataka 560001',
+                    'total_spots': 120,
+                    'price_per_hour': 40.0
                 },
                 {
-                    'name': 'Shopping Mall',
-                    'location': 'West District', 
-                    'address': '456 Mall Avenue, West Side',
-                    'total_spots': 100,
-                    'price_per_hour': 3.0
+                    'name': 'Brigade Road Shopping Complex',
+                    'location': 'Brigade Road, Central Bangalore',
+                    'address': 'Brigade Road, Shanthala Nagar, Ashok Nagar, Bengaluru, Karnataka 560025',
+                    'total_spots': 80,
+                    'price_per_hour': 30.0
                 },
                 {
-                    'name': 'Business District',
-                    'location': 'Financial Center',
-                    'address': '789 Business Blvd, Downtown',
-                    'total_spots': 75,
-                    'price_per_hour': 8.0
+                    'name': 'Indiranagar Metro Station Parking',
+                    'location': 'Indiranagar, East Bangalore',
+                    'address': 'Indiranagar Metro Station, 100 Feet Road, Indiranagar, Bengaluru, Karnataka 560038',
+                    'total_spots': 150,
+                    'price_per_hour': 25.0
+                },
+                {
+                    'name': 'Koramangala Forum Mall',
+                    'location': 'Koramangala, South Bangalore',
+                    'address': 'Forum Mall, 21, Hosur Road, Adugodi, Bengaluru, Karnataka 560030',
+                    'total_spots': 200,
+                    'price_per_hour': 35.0
+                },
+                {
+                    'name': 'Electronic City Tech Park',
+                    'location': 'Electronic City, South Bangalore',
+                    'address': 'Electronic City Phase 1, Hosur Road, Bengaluru, Karnataka 560100',
+                    'total_spots': 300,
+                    'price_per_hour': 20.0
+                },
+                {
+                    'name': 'Whitefield IT Hub Parking',
+                    'location': 'Whitefield, East Bangalore',
+                    'address': 'ITPL Main Road, Whitefield, Bengaluru, Karnataka 560066',
+                    'total_spots': 250,
+                    'price_per_hour': 25.0
+                },
+                {
+                    'name': 'Malleshwaram Shopping District',
+                    'location': 'Malleshwaram, North Bangalore',
+                    'address': 'Sampige Road, Malleshwaram, Bengaluru, Karnataka 560003',
+                    'total_spots': 60,
+                    'price_per_hour': 30.0
+                },
+                {
+                    'name': 'Jayanagar 4th Block Complex',
+                    'location': 'Jayanagar, South Bangalore',
+                    'address': '4th Block, Jayanagar, Bengaluru, Karnataka 560011',
+                    'total_spots': 90,
+                    'price_per_hour': 25.0
                 }
             ]
             
@@ -683,7 +743,7 @@ def create_tables():
                 for i in range(1, lot_data['total_spots'] + 1):
                     spot = ParkingSpot(
                         lot_id=lot.id,
-                        spot_number=f"{i:02d}",
+                        spot_number=f"{i:03d}",
                         status='available'
                     )
                     db.session.add(spot)

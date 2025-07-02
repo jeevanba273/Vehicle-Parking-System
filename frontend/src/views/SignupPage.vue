@@ -12,8 +12,8 @@
             <div class="brand-logo">
               <i class="bi bi-person-plus-fill"></i>
             </div>
-            <h1 class="brand-title">Join ParkEase</h1>
-            <p class="brand-subtitle">Create your account and start parking smarter</p>
+            <h1 class="brand-title">Join ParkEase Bangalore</h1>
+            <p class="brand-subtitle">Create your account and start parking smarter in Bangalore</p>
             
             <div class="benefits-list">
               <div class="benefit-item">
@@ -29,8 +29,8 @@
                 <span>24/7 Access</span>
               </div>
               <div class="benefit-item">
-                <i class="bi bi-star-fill"></i>
-                <span>Premium Locations</span>
+                <i class="bi bi-geo-alt-fill"></i>
+                <span>Prime Bangalore Locations</span>
               </div>
             </div>
           </div>
@@ -42,13 +42,13 @@
             <!-- Mobile Logo -->
             <div class="mobile-logo d-lg-none">
               <i class="bi bi-person-plus-fill"></i>
-              <h2>Join ParkEase</h2>
+              <h2>Join ParkEase Bangalore</h2>
             </div>
             
             <div class="signup-card">
               <div class="signup-header">
                 <h3>Create Account</h3>
-                <p>Fill in your details to get started</p>
+                <p>Fill in your details to get started in Bangalore</p>
               </div>
               
               <form @submit.prevent="handleSignup" class="signup-form">
@@ -97,33 +97,36 @@
                 </div>
                 
                 <div class="form-group">
-                  <label class="form-label">Address</label>
+                  <label class="form-label">Address in Bangalore</label>
                   <div class="input-wrapper">
                     <i class="bi bi-geo-alt-fill input-icon"></i>
                     <textarea 
                       v-model="formData.address" 
                       class="form-control signup-input textarea-control"
                       rows="3"
-                      placeholder="Enter your address"
+                      placeholder="Enter your address in Bangalore, Karnataka"
                       required
                     ></textarea>
                   </div>
                 </div>
                 
                 <div class="form-group">
-                  <label class="form-label">PIN Code</label>
+                  <label class="form-label">PIN Code (Bangalore)</label>
                   <div class="input-wrapper">
                     <i class="bi bi-mailbox-fill input-icon"></i>
                     <input 
                       v-model="formData.pin_code" 
                       type="text" 
                       class="form-control signup-input"
-                      placeholder="Enter 6-digit PIN code"
+                      placeholder="Enter 6-digit PIN code (e.g., 560001)"
                       pattern="[0-9]{6}"
                       maxlength="6"
                       required
                     />
                   </div>
+                  <small class="form-text text-muted">
+                    Common Bangalore PIN codes: 560001 (Central), 560025 (Brigade Road), 560038 (Indiranagar), 560030 (Koramangala)
+                  </small>
                 </div>
                 
                 <button 
@@ -440,6 +443,12 @@ const handleSignup = async () => {
 .signup-input::placeholder {
   color: #a0aec0 !important;
   padding-left: 0.25rem !important;
+}
+
+.form-text {
+  color: #6c757d;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
 }
 
 .signup-btn {

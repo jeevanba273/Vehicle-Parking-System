@@ -55,7 +55,7 @@
                     <th class="fw-bold">User</th>
                     <th class="fw-bold">Contact Information</th>
                     <th class="fw-bold">Booking Activity</th>
-                    <th class="fw-bold">Joined Date</th>
+                    <th class="fw-bold">Joined Date (IST)</th>
                     <th class="fw-bold">Status</th>
                     <th class="fw-bold">Actions</th>
                   </tr>
@@ -169,7 +169,7 @@
                     <p class="form-control-plaintext">{{ selectedUser.pin_code }}</p>
                   </div>
                   <div class="col-6">
-                    <label class="form-label fw-bold">Member Since</label>
+                    <label class="form-label fw-bold">Member Since (IST)</label>
                     <p class="form-control-plaintext">{{ formatDate(selectedUser.created_at) }}</p>
                   </div>
                 </div>
@@ -244,7 +244,9 @@ const getActiveBookingCount = (userId: string) => {
 }
 
 const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-IN', {
+    timeZone: 'Asia/Kolkata',
     year: 'numeric',
     month: 'long',
     day: 'numeric'

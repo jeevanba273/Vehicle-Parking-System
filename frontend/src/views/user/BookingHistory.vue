@@ -41,8 +41,8 @@
           <div class="col-md-3">
             <div class="card bg-warning text-white">
               <div class="card-body text-center">
-                <i class="bi bi-currency-dollar display-4 mb-2"></i>
-                <h3 class="fw-bold">${{ totalSpent.toFixed(2) }}</h3>
+                <i class="bi bi-currency-rupee display-4 mb-2"></i>
+                <h3 class="fw-bold">₹{{ totalSpent.toFixed(2) }}</h3>
                 <p class="mb-0">Total Spent</p>
               </div>
             </div>
@@ -109,11 +109,11 @@
                     <div class="fw-bold">{{ booking.vehicle_number }}</div>
                   </div>
                   <div class="col-6">
-                    <small class="text-muted">Start Time</small>
+                    <small class="text-muted">Start Time (IST)</small>
                     <div class="fw-bold">{{ formatDateTime(booking.start_time) }}</div>
                   </div>
                   <div class="col-6">
-                    <small class="text-muted">End Time</small>
+                    <small class="text-muted">End Time (IST)</small>
                     <div class="fw-bold">
                       {{ booking.end_time ? formatDateTime(booking.end_time) : 'Active' }}
                     </div>
@@ -127,7 +127,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                   <div>
                     <small class="text-muted">Total Cost</small>
-                    <div class="h5 fw-bold text-primary mb-0">${{ booking.total_cost.toFixed(2) }}</div>
+                    <div class="h5 fw-bold text-primary mb-0">₹{{ booking.total_cost.toFixed(2) }}</div>
                   </div>
                   
                   <div v-if="booking.status === 'active'">
@@ -271,7 +271,16 @@ const releaseBooking = async (booking: Booking) => {
 }
 
 const formatDateTime = (dateString: string) => {
-  return new Date(dateString).toLocaleString()
+  const date = new Date(dateString)
+  return date.toLocaleString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  })
 }
 
 const formatDuration = (totalHours: number) => {

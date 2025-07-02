@@ -9,6 +9,15 @@
           </button>
         </div>
 
+        <!-- Timezone Info -->
+        <div class="alert alert-info mb-4">
+          <i class="bi bi-clock me-2"></i>
+          All data and timestamps are displayed in Indian Standard Time (IST)
+          <span v-if="analytics.last_updated" class="ms-3">
+            Last updated: {{ formatDateTime(analytics.last_updated) }}
+          </span>
+        </div>
+
         <!-- Key Metrics -->
         <div class="row g-4 mb-4">
           <div class="col-lg-3 col-md-6">
@@ -54,8 +63,8 @@
           <div class="col-lg-4">
             <div class="card">
               <div class="card-body text-center">
-                <i class="bi bi-currency-dollar text-success display-4 mb-3"></i>
-                <h3 class="fw-bold text-success">${{ (analytics.total_revenue || 0).toFixed(2) }}</h3>
+                <i class="bi bi-currency-rupee text-success display-4 mb-3"></i>
+                <h3 class="fw-bold text-success">₹{{ (analytics.total_revenue || 0).toFixed(2) }}</h3>
                 <p class="text-muted mb-0">Total Revenue</p>
               </div>
             </div>
@@ -85,7 +94,7 @@
           <div class="col-lg-8">
             <div class="card">
               <div class="card-header">
-                <h5 class="card-title mb-0">Revenue by Month</h5>
+                <h5 class="card-title mb-0">Revenue by Month (₹)</h5>
               </div>
               <div class="card-body">
                 <canvas ref="revenueChart" width="400" height="200"></canvas>
@@ -144,8 +153,8 @@
                     <div class="d-flex align-items-center">
                       <div class="bg-success rounded-circle me-3" style="width: 12px; height: 12px;"></div>
                       <div>
-                        <div class="fw-bold">Frontend</div>
-                        <small class="text-muted">Active</small>
+                        <div class="fw-bold">Timezone</div>
+                        <small class="text-muted">IST (Asia/Kolkata)</small>
                       </div>
                     </div>
                   </div>
@@ -194,6 +203,19 @@ const loadAnalytics = async () => {
   }
 }
 
+const formatDateTime = (dateString: string) => {
+  const date = new Date(dateString)
+  return date.toLocaleString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  })
+}
+
 const initCharts = () => {
   if (revenueChart.value) {
     initRevenueChart()
@@ -218,7 +240,7 @@ const initRevenueChart = () => {
     data: {
       labels: revenueData.map((item: any) => item.month),
       datasets: [{
-        label: 'Revenue ($)',
+        label: 'Revenue (₹)',
         data: revenueData.map((item: any) => item.revenue),
         borderColor: '#0d6efd',
         backgroundColor: 'rgba(13, 110, 253, 0.1)',
@@ -240,7 +262,7 @@ const initRevenueChart = () => {
           beginAtZero: true,
           ticks: {
             callback: function(value) {
-              return '$' + value
+              return '₹' + value
             }
           }
         }

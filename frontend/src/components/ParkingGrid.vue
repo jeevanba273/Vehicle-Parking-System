@@ -4,7 +4,7 @@
       <div class="d-flex justify-content-between align-items-center">
         <div>
           <h4 class="grid-title mb-1">{{ lot.name }} - Parking Grid</h4>
-          <p class="grid-subtitle text-muted">Real-time spot management and booking</p>
+          <p class="grid-subtitle text-muted">Real-time spot management and booking (IST)</p>
         </div>
         <div class="grid-stats">
           <div class="stat-item">
@@ -91,7 +91,7 @@
                   type="text"
                   class="form-control booking-input"
                   required
-                  placeholder="Enter vehicle number"
+                  placeholder="KA-01-AB-1234"
                 />
               </div>
             </div>
@@ -161,7 +161,7 @@
                 <div class="cost-details">
                   <div class="cost-row">
                     <span>Hourly Rate:</span>
-                    <span class="cost-value">${{ lot.price_per_hour.toFixed(2) }}/hour</span>
+                    <span class="cost-value">₹{{ lot.price_per_hour.toFixed(2) }}/hour</span>
                   </div>
                   <div class="cost-row">
                     <span>Duration:</span>
@@ -169,7 +169,7 @@
                   </div>
                   <div class="cost-row total-row">
                     <span>Total Cost:</span>
-                    <span class="total-cost">${{ calculateTotalCost().toFixed(2) }}</span>
+                    <span class="total-cost">₹{{ calculateTotalCost().toFixed(2) }}</span>
                   </div>
                 </div>
               </div>
@@ -205,11 +205,11 @@
               <div class="info-value">{{ selectedSpot.vehicle_number }}</div>
             </div>
             <div class="info-item">
-              <label>Booked At</label>
+              <label>Booked At (IST)</label>
               <div class="info-value">{{ formatDateTime(selectedSpot.booked_at || '') }}</div>
             </div>
             <div class="info-item">
-              <label>Release Time</label>
+              <label>Release Time (IST)</label>
               <div class="info-value">{{ formatDateTime(selectedSpot.release_time || '') }}</div>
             </div>
             <div class="info-item">
@@ -256,7 +256,7 @@
                 </div>
                 <div class="booking-info-item">
                   <label>Total Cost</label>
-                  <div class="booking-info-value cost-highlight">${{ selectedSpot.booking_details.total_cost.toFixed(2) }}</div>
+                  <div class="booking-info-value cost-highlight">₹{{ selectedSpot.booking_details.total_cost.toFixed(2) }}</div>
                 </div>
               </div>
             </div>
@@ -397,7 +397,7 @@ const bookSpot = async () => {
       await loadSpots()
       selectedSpot.value = null
       resetForm()
-      showNotification(`Spot booked successfully for ${formatDuration(Math.max(0.25, bookingForm.totalHours))}!`, 'success')
+      showNotification(`Spot booked successfully for ${formatDuration(Math.max(0.25, bookingForm.totalHours))}! All times are in IST.`, 'success')
     } else {
       showNotification(result.message || 'Failed to book spot', 'error')
     }
@@ -463,7 +463,17 @@ const resetForm = () => {
 
 const formatDateTime = (dateString: string) => {
   if (!dateString) return 'N/A'
-  return new Date(dateString).toLocaleString()
+  const date = new Date(dateString)
+  return date.toLocaleString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+  })
 }
 
 const getTimeRemaining = (releaseTime: string) => {
@@ -498,7 +508,7 @@ const getTimeRemainingColor = (releaseTime: string) => {
   return 'text-success'
 }
 
-const showNotification = (message: string, _notificationType: 'success' | 'error' | 'warning' | 'info') => {
+const showNotification = (message: string, notificationType: 'success' | 'error' | 'warning' | 'info') => {
   // Enhanced notification system - will be replaced with toast notifications
   alert(message)
 }
