@@ -206,11 +206,11 @@
             </div>
             <div class="info-item">
               <label>Booked At (IST)</label>
-              <div class="info-value">{{ formatDateTime(selectedSpot.booked_at || '') }}</div>
+              <div class="info-value">{{ parseISTDateTime(selectedSpot.booked_at || '') }}</div>
             </div>
             <div class="info-item">
               <label>Release Time (IST)</label>
-              <div class="info-value">{{ formatDateTime(selectedSpot.release_time || '') }}</div>
+              <div class="info-value">{{ parseISTDateTime(selectedSpot.release_time || '') }}</div>
             </div>
             <div class="info-item">
               <label>Time Remaining</label>
@@ -472,51 +472,130 @@ const getCurrentISTTime = () => {
   })
 }
 
-const formatDateTime = (dateString: string) => {
-  if (!dateString) return 'N/A'
-  const date = new Date(dateString)
-  return date.toLocaleString('en-IN', {
-    timeZone: 'Asia/Kolkata',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: true
-  })
+const parseISTDateTime = (dateString: string) => {
+  if (!dateString || dateString === 'N/A') return 'N/A'
+  
+  // If the string already contains 'IST', just format it nicely
+  if (dateString.includes('IST')) {
+    try {
+      // Parse the IST string format: "2025-01-03 03:18:34 IST"
+      const parts = dateString.replace(' IST', '').split(' ')
+      if (parts.length === 2) {
+        const [datePart, timePart] = parts
+        const [year, month, day] = datePart.split('-')
+        const [hour, minute, second] = timePart.split(':')
+        
+        const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), 
+                             parseInt(hour), parseInt(minute), parseInt(second))
+        
+        return date.toLocaleString('en-IN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: true
+        }) + ' IST'
+      }
+    } catch (error) {
+      console.error('Error parsing IST date:', error)
+    }
+  }
+  
+  // Fallback: try to parse as regular date and convert to IST
+  try {
+    const date = new Date(dateString)
+    return date.toLocaleString('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    }) + ' IST'
+  } catch (error) {
+    console.error('Error parsing date:', error)
+    return dateString
+  }
 }
 
 const getTimeRemaining = (releaseTime: string) => {
-  if (!releaseTime) return 'N/A'
+  if (!releaseTime || releaseTime === 'N/A') return 'N/A'
   
-  const now = new Date()
-  const release = new Date(releaseTime)
-  const diff = release.getTime() - now.getTime()
-  
-  if (diff <= 0) return 'Expired'
-  
-  const hours = Math.floor(diff / (1000 * 60 * 60))
-  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-  
-  if (hours > 0) {
-    return `${hours}h ${minutes}m`
-  } else {
-    return `${minutes}m`
+  try {
+    let releaseDate: Date
+    
+    // Parse IST format: "2025-01-03 06:03:34 IST"
+    if (releaseTime.includes('IST')) {
+      const parts = releaseTime.replace(' IST', '').split(' ')
+      if (parts.length === 2) {
+        const [datePart, timePart] = parts
+        const [year, month, day] = datePart.split('-')
+        const [hour, minute, second] = timePart.split(':')
+        
+        releaseDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), 
+                              parseInt(hour), parseInt(minute), parseInt(second))
+      } else {
+        releaseDate = new Date(releaseTime)
+      }
+    } else {
+      releaseDate = new Date(releaseTime)
+    }
+    
+    const now = new Date()
+    const diff = releaseDate.getTime() - now.getTime()
+    
+    if (diff <= 0) return 'Expired'
+    
+    const hours = Math.floor(diff / (1000 * 60 * 60))
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+    
+    if (hours > 0) {
+      return `${hours}h ${minutes}m`
+    } else {
+      return `${minutes}m`
+    }
+  } catch (error) {
+    console.error('Error calculating time remaining:', error)
+    return 'Error'
   }
 }
 
 const getTimeRemainingColor = (releaseTime: string) => {
-  if (!releaseTime) return 'text-muted'
+  if (!releaseTime || releaseTime === 'N/A') return 'text-muted'
   
-  const now = new Date()
-  const release = new Date(releaseTime)
-  const diff = release.getTime() - now.getTime()
-  const minutes = diff / (1000 * 60)
-  
-  if (minutes <= 0) return 'text-danger'
-  if (minutes <= 30) return 'text-warning'
-  return 'text-success'
+  try {
+    let releaseDate: Date
+    
+    if (releaseTime.includes('IST')) {
+      const parts = releaseTime.replace(' IST', '').split(' ')
+      if (parts.length === 2) {
+        const [datePart, timePart] = parts
+        const [year, month, day] = datePart.split('-')
+        const [hour, minute, second] = timePart.split(':')
+        
+        releaseDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), 
+                              parseInt(hour), parseInt(minute), parseInt(second))
+      } else {
+        releaseDate = new Date(releaseTime)
+      }
+    } else {
+      releaseDate = new Date(releaseTime)
+    }
+    
+    const now = new Date()
+    const diff = releaseDate.getTime() - now.getTime()
+    const minutes = diff / (1000 * 60)
+    
+    if (minutes <= 0) return 'text-danger'
+    if (minutes <= 30) return 'text-warning'
+    return 'text-success'
+  } catch (error) {
+    return 'text-muted'
+  }
 }
 
 const showNotification = (message: string, type: 'success' | 'error' | 'warning' | 'info') => {
